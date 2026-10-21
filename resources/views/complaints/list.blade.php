@@ -1,0 +1,266 @@
+@extends('layouts.app')
+@section('content')
+@php
+  $user       = auth()->user();
+  $admin      = $user->isAdmin();
+  $waka       = $user->isWaka();
+  $canApprove = $admin || $waka;
+  $pic        = $user->isPic();
+  $guru       = $user->isGuru();
+
+  // Counters for the Overview cards (Image 2 style)
+  $cntTotal   = $complaints->count();
+  $cntPending = $complaints->where('status_repair', 'Belum Diperbaiki')->count();
+  $cntProcess = $complaints->where('status_repair', 'Menunggu Spare Part')->count();
+  $cntDone    = $complaints->where('status_repair', 'Sudah Diperbaiki')->count();
+
+  // Badge classes
+  $repairCls  = ['Belum Diperbaiki'=>'bad', 'Menunggu Spare Part'=>'warn', 'Sudah Diperbaiki'=>'ok'];
+@endphp
+
+{{-- ═══════════════ TOP STATS BAR (Image 2 Replica) ═══════════════ --}}
+<div class="dashboard-top-grid">
+  {{-- Hero / Portfolio Summary Card --}}
+  <div class="hero-stat-card">
+    <div class="hero-stat-header">
+      <span class="hero-stat-title">Monitoring Sarpras</span>
+      <span class="hero-stat-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Real-time
+      </span>
+    </div>
+    <div class="hero-stat-value">{{ $cntTotal }} Laporan</div>
+    <div class="hero-stat-sub">Status perbaikan ditangani dan diperbarui secara eksklusif oleh PIC ruang</div>
+
+    <div class="hero-stat-pills">
+      <button class="filter-pill active" type="button" onclick="filterStatus('')">Semua</button>
+      <button class="filter-pill" type="button" onclick="filterStatus('Belum Diperbaiki')">Belum ({{ $cntPending }})</button>
+      <button class="filter-pill" type="button" onclick="filterStatus('Menunggu Spare Part')">Spare Part ({{ $cntProcess }})</button>
+      <button class="filter-pill" type="button" onclick="filterStatus('Sudah Diperbaiki')">Selesai ({{ $cntDone }})</button>
+    </div>
+  </div>
+
+  {{-- 3 Asset/Status Cards Stack (Image 2 right cards) --}}
+  <div class="asset-cards-row">
+    {{-- Card 1: Belum Diperbaiki --}}
+    <div class="asset-card purple">
+      <div class="asset-card-top">
+        <div>
+          <div class="asset-card-value">{{ $cntPending }} Lap</div>
+          <div class="asset-card-sub">Belum Diperbaiki</div>
+        </div>
+      </div>
+      <div class="asset-card-bottom">
+        <div class="asset-icon-pill">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <span class="asset-delta-tag neutral">Antrean PIC</span>
+      </div>
+    </div>
+
+    {{-- Card 2: Menunggu Spare Part --}}
+    <div class="asset-card green">
+      <div class="asset-card-top">
+        <div>
+          <div class="asset-card-value">{{ $cntProcess }} Lap</div>
+          <div class="asset-card-sub">Menunggu Part</div>
+        </div>
+      </div>
+      <div class="asset-card-bottom">
+        <div class="asset-icon-pill">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <span class="asset-delta-tag pos">Diproses</span>
+      </div>
+    </div>
+
+    {{-- Card 3: Selesai Diperbaiki --}}
+    <div class="asset-card gold">
+      <div class="asset-card-top">
+        <div>
+          <div class="asset-card-value">{{ $cntDone }} Lap</div>
+          <div class="asset-card-sub">Sudah Selesai</div>
+        </div>
+      </div>
+      <div class="asset-card-bottom">
+        <div class="asset-icon-pill">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span class="asset-delta-tag pos">100% OK</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- ═══════════════ MAIN CONTENT (Split Grid) ═══════════════ --}}
+<div class="dashboard-split-grid">
+  {{-- Left Column: List of Complaints --}}
+  <div>
+    <div class="page-head">
+      <div>
+        <h2 style="margin:0;font-size:1.25rem">{{ $pic ? 'Pengaduan Ruangan Saya' : 'Daftar Pengaduan Sarpras' }}</h2>
+        <p class="muted" style="margin:.15rem 0 0">
+          Status penanganan kerusakan sarpras dikelola dan diperbarui secara eksklusif oleh <b>PIC Ruangan</b>.
+        </p>
+      </div>
+
+      @if($admin || $guru || $waka)
+        <a class="btn sm" href="{{ route('complaints.create') }}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Laporkan Kerusakan
+        </a>
+      @endif
+    </div>
+
+    @if($complaints->isEmpty())
+      <section class="card center">
+        <div class="item-icon-squircle" style="margin:0 auto 1rem;width:48px;height:48px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3>Semua Fasilitas Terawat</h3>
+        <p class="muted">{{ $pic ? 'Belum ada pengaduan di ruangan Anda.' : 'Belum ada pengaduan kerusakan yang diajukan.' }}</p>
+        @if($admin || $guru || $waka)
+          <a class="btn" href="{{ route('complaints.create') }}" style="margin-top:.5rem">Buat Laporan Baru</a>
+        @endif
+      </section>
+    @endif
+
+    @foreach($complaints as $c)
+    <article class="card item" data-repair="{{ $c->status_repair }}">
+      {{-- Header with squircle icon --}}
+      <div class="item-top">
+        <div class="item-title-wrap">
+          <div class="item-icon-squircle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div>
+            <h3>{{ $c->room->room_name }}</h3>
+            <span class="muted" style="font-size:.78rem">{{ $c->room->location ?? 'Gedung Sekolah' }}</span>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:.45rem;flex-wrap:wrap;align-items:center">
+          <span class="badge {{ $repairCls[$c->status_repair] ?? 'bad' }}">{{ $c->status_repair }}</span>
+        </div>
+      </div>
+
+      {{-- Description --}}
+      <p style="margin:.65rem 0;line-height:1.55">{!! nl2br(e($c->description)) !!}</p>
+
+      {{-- Photo Attachment --}}
+      @if($c->photo_path)
+        <div style="margin:.6rem 0">
+          <a href="{{ asset('storage/'.$c->photo_path) }}" target="_blank" rel="noopener">
+            <img class="thumb" src="{{ asset('storage/'.$c->photo_path) }}" alt="Foto kerusakan {{ $c->room->room_name }}" loading="lazy" style="max-height:220px;border-radius:12px">
+          </a>
+        </div>
+      @endif
+
+      {{-- Metadata --}}
+      <p class="meta">
+        Dilaporkan oleh <b>{{ $c->reporter->fullname ?? '-' }}</b> ·
+        {{ $c->reported_at->format('d M Y H:i') }} ({{ $c->age_h }} jam lalu)
+        · PIC: <b>{{ $c->room->pic->fullname ?? 'Belum Ditunjuk' }}</b>
+      </p>
+
+      @if($c->repair_note)
+        <p class="note"><b>Catatan Penanganan PIC:</b> {{ $c->repair_note }}</p>
+      @endif
+
+      {{-- ── WhatsApp overdue reminder (Admin & Waka) ── --}}
+      @if($canApprove && $c->status_repair === 'Belum Diperbaiki')
+        <div class="actions" style="margin-top:.6rem">
+          @if($c->overdue && $c->wa)
+            <a class="btn wa" href="{{ $c->wa }}" target="_blank" rel="noopener">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              Kirim Peringatan WhatsApp ke PIC
+            </a>
+          @else
+            <button class="btn wa" disabled style="opacity:.6">
+              {{ $c->wa ? 'Peringatan WhatsApp aktif setelah '.(int)$limitH.' jam' : 'PIC belum mendaftarkan nomor HP' }}
+            </button>
+          @endif
+        </div>
+      @endif
+
+      {{-- ── PIC: Hanya PIC ruangan ini yang dapat mengubah status ─────── --}}
+      @if($pic && (int)($c->room->pic_id ?? 0) === (int)$user->id)
+        <form method="post" action="{{ route('complaints.status') }}" class="form inline" style="margin-top:.85rem">@csrf
+          <input type="hidden" name="id" value="{{ $c->id }}">
+          <label>Status Penanganan (PIC)
+            <select name="status_repair">
+              @foreach($statuses as $s)
+                <option {{ $s === $c->status_repair ? 'selected' : '' }}>{{ $s }}</option>
+              @endforeach
+            </select>
+          </label>
+          <label>Catatan Perkembangan
+            <input name="repair_note" value="{{ $c->repair_note }}" placeholder="Contoh: Spare part telah tiba, dipasang besok pagi.">
+          </label>
+          <button class="btn sm">Perbarui Status</button>
+        </form>
+      @endif
+
+      {{-- ── Delete (Admin, Waka, atau Guru pelapor) ───────────────────── --}}
+      @if($admin || $waka || ($guru && (int)$c->reporter_id === $user->id))
+        <form method="post" action="{{ route('complaints.delete') }}" class="form inline"
+          style="margin-top:.5rem"
+          onsubmit="return confirm('Hapus rekaman pengaduan di {{ addslashes($c->room->room_name) }}?')">@csrf
+          <input type="hidden" name="id" value="{{ $c->id }}">
+          <button type="submit" class="btn sm ghost danger" style="border:0;color:var(--bad);padding:0;font-size:.78rem">
+            Hapus Pengaduan
+          </button>
+        </form>
+      @endif
+    </article>
+    @endforeach
+  </div>
+
+  {{-- Right Column: Dark Action Card (Image 2 Replica) --}}
+  <div>
+    <div class="dark-action-banner">
+      <span class="banner-badge">FITUR KAMERA REALTIME</span>
+      <h3 class="banner-title">Ambil Foto Langsung di Tempat</h3>
+      <p class="banner-desc">
+        Laporkan sarpras yang rusak langsung melalui browser Anda tanpa perlu upload file manual. Dilengkapi preview realtime dan switch kamera.
+      </p>
+      @if($admin || $guru || $waka)
+        <a href="{{ route('complaints.create') }}" class="btn-banner-cta">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+          Buka Kamera &amp; Lapor
+        </a>
+      @else
+        <span class="badge" style="background:rgba(255,255,255,.1);color:#fff">Login sebagai Guru / Admin / Waka untuk melapor</span>
+      @endif
+    </div>
+
+    {{-- Quick Info Card --}}
+    <div class="card" style="margin-top:1.25rem">
+      <h3 style="font-size:.95rem;margin-bottom:.5rem">Alur Tindak Lanjut Kerusakan</h3>
+      <ul style="padding-left:1.2rem;margin:0;font-size:.84rem;color:var(--ink-secondary);line-height:1.7">
+        <li>Guru atau staf melaporkan kerusakan fasilitas ruang.</li>
+        <li><b>PIC Ruang</b> bertanggung jawab penuh memperbarui status penanganan &amp; catatan perbaikan.</li>
+        <li>Pelapor menerima notifikasi pembaruan status secara otomatis.</li>
+        <li>Jika &gt; 48 jam masih berstatus <i>Belum Diperbaiki</i>, Admin / Waka dapat mengirimkan peringatan WhatsApp ke PIC.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+// Quick Filter helper
+function filterStatus(statusRepair) {
+  document.querySelectorAll('article.card.item').forEach(el => {
+    if (!statusRepair || el.dataset.repair === statusRepair) {
+      el.style.display = '';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick')?.includes(statusRepair));
+  });
+}
+</script>
+@endsection
