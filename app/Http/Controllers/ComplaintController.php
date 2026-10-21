@@ -57,29 +57,33 @@ class ComplaintController extends Controller
         if (mb_strlen($desc) < 10) return back()->withErrors(['description' => 'Jelaskan kerusakan minimal 10 karakter.'])->withInput();
 
         $photoPath = null;
-        // Check for real-time camera snapshot (base64)
-        if ($request->filled('camera_photo_data')) {
-            $data = (string)$request->input('camera_photo_data');
-            if (preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
-                $data = substr($data, strpos($data, ',') + 1);
-                $ext = strtolower($type[1]);
-                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-                    $decoded = base64_decode($data);
-                    if ($decoded !== false) {
-                        $ext = ($ext === 'jpeg') ? 'jpg' : $ext;
-                        $filename = 'complaints/livecam_' . uniqid() . '.' . $ext;
-                        \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $decoded);
-                        $photoPath = $filename;
+        try {
+            // Check for real-time camera snapshot (base64)
+            if ($request->filled('camera_photo_data')) {
+                $data = (string)$request->input('camera_photo_data');
+                if (preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
+                    $data = substr($data, strpos($data, ',') + 1);
+                    $ext = strtolower($type[1]);
+                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                        $decoded = base64_decode($data);
+                        if ($decoded !== false) {
+                            $ext = ($ext === 'jpeg') ? 'jpg' : $ext;
+                            $filename = 'complaints/livecam_' . uniqid() . '.' . $ext;
+                            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $decoded);
+                            $photoPath = $filename;
+                        }
                     }
                 }
             }
-        }
 
-        // Fallback to standard file upload if no camera snapshot
-        if (!$photoPath && $request->hasFile('photo') && $request->file('photo')->isValid()) {
-            $file = $request->file('photo');
-            if ($file->getSize() > 5 * 1024 * 1024) return back()->withErrors(['photo' => 'Ukuran foto maksimal 5 MB.'])->withInput();
-            $photoPath = $file->store('complaints', 'public');
+            // Fallback to standard file upload if no camera snapshot
+            if (!$photoPath && $request->hasFile('photo') && $request->file('photo')->isValid()) {
+                $file = $request->file('photo');
+                if ($file->getSize() > 5 * 1024 * 1024) return back()->withErrors(['photo' => 'Ukuran foto maksimal 5 MB.'])->withInput();
+                $photoPath = $file->store('complaints', 'public');
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Upload error: ' . $e->getMessage());
         }
 
         $complaint = Complaint::create([

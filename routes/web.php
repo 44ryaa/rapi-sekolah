@@ -21,6 +21,16 @@ Route::post('/reset',        [AuthController::class, 'reset']);
 Route::get('/calendar',      [CalendarController::class, 'index'])->name('calendar');
 Route::get('/calendar/api',  [CalendarController::class, 'api'])->name('calendar.api');
 
+// Serve uploaded storage files (essential for Vercel serverless)
+Route::get('/storage/{path}', function ($path) {
+    $filePath = config('filesystems.disks.public.root') . '/' . $path;
+    if (!file_exists($filePath)) {
+        abort(404);
+    }
+    $mime = mime_content_type($filePath) ?: 'image/jpeg';
+    return response()->file($filePath, ['Content-Type' => $mime]);
+})->where('path', '.*');
+
 // ── Authenticated ────────────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
 

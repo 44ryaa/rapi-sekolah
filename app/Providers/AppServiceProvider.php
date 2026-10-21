@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
-        // Vercel Serverless SQLite Handler (Writable in /tmp)
+        // Vercel Serverless SQLite & Storage Handler (Writable in /tmp)
         if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL'])) {
             $tmpDb = '/tmp/database.sqlite';
             $srcDb = database_path('database.sqlite');
@@ -35,6 +35,12 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
             config(['database.connections.sqlite.database' => $tmpDb]);
+
+            $tmpStorage = '/tmp/storage';
+            if (!is_dir($tmpStorage)) {
+                @mkdir($tmpStorage, 0777, true);
+            }
+            config(['filesystems.disks.public.root' => $tmpStorage]);
         }
     }
 }
