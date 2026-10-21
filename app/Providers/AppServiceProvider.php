@@ -22,5 +22,19 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') === 'production' || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
+
+        // Vercel Serverless SQLite Handler (Writable in /tmp)
+        if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL'])) {
+            $tmpDb = '/tmp/database.sqlite';
+            $srcDb = database_path('database.sqlite');
+            if (!file_exists($tmpDb)) {
+                if (file_exists($srcDb)) {
+                    copy($srcDb, $tmpDb);
+                } else {
+                    touch($tmpDb);
+                }
+            }
+            config(['database.connections.sqlite.database' => $tmpDb]);
+        }
     }
 }
