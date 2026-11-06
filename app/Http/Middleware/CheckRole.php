@@ -2,28 +2,32 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Role;
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\Role;
 
 class CheckRole
 {
     public function handle(Request $request, Closure $next, string ...$roles): mixed
     {
         $user = $request->user();
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
-        $allowed = array_map(fn($r) => match($r) {
-            'admin' => Role::ADMIN,
-            'pic'   => Role::PIC,
-            'guru'  => Role::GURU,
-            'waka'  => Role::WAKA,
-            default => 0,
-        }, $roles);
+        $allowed = [];
+        foreach ($roles as $r) {
+            match ($r) {
+                'admin' => $allowed[] = Role::ADMIN,
+                'pic' => $allowed[] = Role::PIC,
+                'guru' => array_push($allowed, Role::GURU, Role::ORGANISASI),
+                'organisasi' => $allowed[] = Role::ORGANISASI,
+                'waka' => $allowed[] = Role::WAKA,
+                default => null,
+            };
+        }
 
-        if (!in_array((int)$user->role_id, $allowed, true)) {
+        if (! in_array((int) $user->role_id, $allowed, true)) {
             abort(403, 'Akses tidak diizinkan.');
         }
 

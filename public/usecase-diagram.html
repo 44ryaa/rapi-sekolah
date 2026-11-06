@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Use Case Diagram · RAPI-Sekolah (Dokumen SRS Resmi)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --boundary-border: #475569;
+      --boundary-bg: rgba(15, 23, 42, 0.6);
+      --uc-fill: #1e293b;
+      --uc-stroke: #38bdf8;
+      --uc-text: #ffffff;
+      --actor-stroke: #f1f5f9;
+      --actor-text: #e2e8f0;
+      --line-stroke: #cbd5e1;
+      --include-stroke: #f59e0b;
+      --extend-stroke: #ec4899;
+      --badge-inc-bg: #78350f;
+      --badge-inc-txt: #fde68a;
+      --badge-ext-bg: #831843;
+      --badge-ext-txt: #fbcfe8;
+    }
+
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --boundary-border: #94a3b8;
+      --boundary-bg: #ffffff;
+      --uc-fill: #f0fdf4;
+      --uc-stroke: #0284c7;
+      --uc-text: #0f172a;
+      --actor-stroke: #0f172a;
+      --actor-text: #0f172a;
+      --line-stroke: #334155;
+      --include-stroke: #d97706;
+      --extend-stroke: #db2777;
+      --badge-inc-bg: #fef3c7;
+      --badge-inc-txt: #92400e;
+      --badge-ext-bg: #fce7f3;
+      --badge-ext-txt: #9d174d;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px 60px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .toolbar {
+      width: 1080px;
+      max-width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 12px 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .toolbar h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+    }
+    .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn:hover {
+      background: var(--border);
+    }
+    .btn-primary {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+    }
+    .btn-primary:hover {
+      background: #0369a1;
+    }
+
+    .canvas-container {
+      width: 1080px;
+      max-width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      overflow-x: auto;
+    }
+
+    svg {
+      display: block;
+      margin: 0 auto;
+      user-select: none;
+    }
+
+    /* SRS Documentation Table section */
+    .doc-section {
+      width: 1080px;
+      max-width: 100%;
+      margin-top: 30px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .doc-section h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .doc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .doc-table th {
+      background: rgba(148, 163, 184, 0.1);
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border);
+    }
+    .doc-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .doc-table tr:hover {
+      background: rgba(148, 163, 184, 0.05);
+    }
+    .tag {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-weight: 600;
+      display: inline-block;
+      margin: 2px 2px 2px 0;
+    }
+    .tag-actor { background: #38bdf820; color: #38bdf8; border: 1px solid #38bdf840; }
+    .tag-inc { background: var(--badge-inc-bg); color: var(--badge-inc-txt); }
+    .tag-ext { background: var(--badge-ext-bg); color: var(--badge-ext-txt); }
+
+    @media print {
+      body { background: #ffffff !important; color: #000000 !important; padding: 0; }
+      .toolbar, .btn { display: none; }
+      .canvas-container, .doc-section { border: none; box-shadow: none; width: 100%; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- TOP TOOLBAR -->
+  <div class="toolbar">
+    <h1>
+      <span>Use Case Diagram · RAPI-Sekolah</span>
+      <span class="badge">SRS Document Standard</span>
+    </h1>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn" onclick="toggleTheme()" id="btn-theme">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <span id="theme-label">Ganti ke Tema Terang (SRS Print)</span>
+      </button>
+      <button class="btn btn-primary" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        <span>Cetak / Simpan PDF</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- DIAGRAM CANVAS (SVG HIGH RESOLUTION) -->
+  <div class="canvas-container">
+    <svg width="1020" height="780" viewBox="0 0 1020 780" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Arrowhead for Include (Amber) -->
+        <marker id="arrow-include" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--include-stroke)" />
+        </marker>
+        <!-- Arrowhead for Extend (Pink) -->
+        <marker id="arrow-extend" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--extend-stroke)" />
+        </marker>
+        <!-- Drop shadow for use cases -->
+        <filter id="uc-shadow" x="-8%" y="-8%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.12"/>
+        </filter>
+      </defs>
+
+      <!-- ================= SYSTEM BOUNDARY ================= -->
+      <g id="system-boundary">
+        <rect x="180" y="25" width="660" height="725" rx="14"
+              fill="var(--boundary-bg)" stroke="var(--boundary-border)" stroke-width="1.8" />
+        <rect x="180" y="25" width="660" height="36" rx="14"
+              fill="rgba(56, 189, 248, 0.08)" />
+        <text x="510" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)" letter-spacing="0.04em">
+          SISTEM MANAJEMEN SARPRAS (RAPI-SEKOLAH)
+        </text>
+      </g>
+
+      <!-- ================= ACTORS ================= -->
+
+      <!-- 1. ACTOR: WAKA / ADMIN (Left Top) -->
+      <g id="actor-waka-admin" transform="translate(85, 175)">
+        <!-- Head -->
+        <circle cx="0" cy="-45" r="16" fill="none" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <!-- Body -->
+        <line x1="0" y1="-29" x2="0" y2="12" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <!-- Arms -->
+        <line x1="-24" y1="-12" x2="24" y2="-12" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <!-- Left Leg -->
+        <line x1="0" y1="12" x2="-20" y2="48" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <!-- Right Leg -->
+        <line x1="0" y1="12" x2="20" y2="48" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <!-- Label -->
+        <text x="0" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="var(--actor-text)">
+          Waka / Admin
+        </text>
+        <text x="0" y="85" text-anchor="middle" font-size="10.5" fill="var(--muted)">
+          (Sarpras &amp; IT)
+        </text>
+      </g>
+
+      <!-- 2. ACTOR: PIC RUANG (Left Bottom) -->
+      <g id="actor-pic" transform="translate(85, 540)">
+        <circle cx="0" cy="-45" r="16" fill="none" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="0" y1="-29" x2="0" y2="12" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="-24" y1="-12" x2="24" y2="-12" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="0" y1="12" x2="-20" y2="48" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="0" y1="12" x2="20" y2="48" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <text x="0" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="var(--actor-text)">
+          PIC Ruang
+        </text>
+        <text x="0" y="85" text-anchor="middle" font-size="10.5" fill="var(--muted)">
+          (Teknisi / Pengelola)
+        </text>
+      </g>
+
+      <!-- 3. ACTOR: GURU / ORGANISASI (Right Top) -->
+      <g id="actor-guru" transform="translate(935, 175)">
+        <circle cx="0" cy="-45" r="16" fill="none" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="0" y1="-29" x2="0" y2="12" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="-24" y1="-12" x2="24" y2="-12" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="0" y1="12" x2="-20" y2="48" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="0" y1="12" x2="20" y2="48" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <text x="0" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="var(--actor-text)">
+          Guru / Organisasi
+        </text>
+        <text x="0" y="85" text-anchor="middle" font-size="10.5" fill="var(--muted)">
+          (Pemohon Sarpras)
+        </text>
+      </g>
+
+      <!-- 4. ACTOR: SISWA / TAMU (Right Bottom) -->
+      <g id="actor-siswa" transform="translate(935, 540)">
+        <circle cx="0" cy="-45" r="16" fill="none" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="0" y1="-29" x2="0" y2="12" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="-24" y1="-12" x2="24" y2="-12" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="0" y1="12" x2="-20" y2="48" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <line x1="0" y1="12" x2="20" y2="48" stroke="var(--actor-stroke)" stroke-width="2.2" />
+        <text x="0" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="var(--actor-text)">
+          Siswa / Tamu
+        </text>
+        <text x="0" y="85" text-anchor="middle" font-size="10.5" fill="var(--muted)">
+          (Publik / Pelapor)
+        </text>
+      </g>
+
+
+      <!-- ================= ASSOCIATION LINES (ACTOR -> USE CASE) ================= -->
+      <g id="association-lines" stroke="var(--line-stroke)" stroke-width="1.6" fill="none">
+        <!-- Waka/Admin (85, 175) -> UC1 Login (510, 100) -->
+        <line x1="115" y1="160" x2="400" y2="110" />
+
+        <!-- Waka/Admin (85, 175) -> UC2 Lihat Kalender (510, 205) -->
+        <line x1="115" y1="175" x2="390" y2="205" />
+
+        <!-- Waka/Admin (85, 175) -> UC3 Pengajuan & Approval (510, 310) -->
+        <line x1="115" y1="190" x2="400" y2="295" />
+
+        <!-- Waka/Admin (85, 175) -> UC5 Pindah Ruangan (510, 500) -->
+        <line x1="115" y1="205" x2="410" y2="485" />
+
+        <!-- Waka/Admin (85, 175) -> UC7 Kelola Status Perbaikan (295, 660) -->
+        <line x1="105" y1="230" x2="240" y2="635" />
+
+        <!-- PIC Ruang (85, 540) -> UC1 Login (510, 100) -->
+        <path d="M 115 515 C 130 380, 280 140, 400 115" />
+
+        <!-- PIC Ruang (85, 540) -> UC2 Lihat Kalender (510, 205) -->
+        <path d="M 115 530 C 180 430, 290 260, 400 220" />
+
+        <!-- PIC Ruang (85, 540) -> UC7 Kelola Status Perbaikan (295, 660) -->
+        <line x1="115" y1="560" x2="220" y2="640" />
+
+        <!-- Guru/Organisasi (935, 175) -> UC1 Login (510, 100) -->
+        <line x1="905" y1="160" x2="620" y2="110" />
+
+        <!-- Guru/Organisasi (935, 175) -> UC2 Lihat Kalender (510, 205) -->
+        <line x1="905" y1="175" x2="630" y2="205" />
+
+        <!-- Guru/Organisasi (935, 175) -> UC3 Pengajuan Peminjaman (510, 310) -->
+        <line x1="905" y1="190" x2="620" y2="295" />
+
+        <!-- Guru/Organisasi (935, 175) -> UC4 Input Pengaduan (710, 410) -->
+        <line x1="905" y1="210" x2="800" y2="385" />
+
+        <!-- Siswa/Tamu (935, 540) -> UC2 Lihat Kalender (Agenda Publik Tanpa Login) -->
+        <path d="M 905 520 C 860 380, 750 250, 630 215" />
+
+        <!-- Siswa/Tamu (935, 540) -> UC4 Input Pengaduan (710, 410) -->
+        <line x1="905" y1="530" x2="780" y2="435" />
+      </g>
+
+
+      <!-- ================= USE CASES (ELLIPSES) ================= -->
+
+      <!-- UC 1: Login dan Autentikasi -->
+      <g id="uc-login" filter="url(#uc-shadow)">
+        <ellipse cx="510" cy="100" rx="105" ry="30"
+                 fill="var(--uc-fill)" stroke="var(--uc-stroke)" stroke-width="2" />
+        <text x="510" y="96" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--uc-text)">
+          Login &amp; Autentikasi
+        </text>
+        <text x="510" y="112" text-anchor="middle" font-size="10" fill="var(--muted)">
+          (Password &amp; WhatsApp OTP)
+        </text>
+      </g>
+
+      <!-- UC 2: Lihat Kalender & Agenda Harian (Publik) -->
+      <g id="uc-calendar" filter="url(#uc-shadow)">
+        <ellipse cx="510" cy="205" rx="120" ry="30"
+                 fill="var(--uc-fill)" stroke="var(--uc-stroke)" stroke-width="2" />
+        <text x="510" y="201" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--uc-text)">
+          Lihat Kalender &amp; Agenda Harian
+        </text>
+        <text x="510" y="217" text-anchor="middle" font-size="10" fill="var(--muted)">
+          (Publik / Tanpa Login Awal)
+        </text>
+      </g>
+
+      <!-- UC 3: Pengajuan Peminjaman Ruang -->
+      <g id="uc-pengajuan" filter="url(#uc-shadow)">
+        <ellipse cx="510" cy="310" rx="115" ry="30"
+                 fill="var(--uc-fill)" stroke="var(--uc-stroke)" stroke-width="2" />
+        <text x="510" y="306" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--uc-text)">
+          Pengajuan Peminjaman Ruang
+        </text>
+        <text x="510" y="322" text-anchor="middle" font-size="10" fill="var(--muted)">
+          (Validasi Bentrok &amp; Approval)
+        </text>
+      </g>
+
+      <!-- UC 4: Input Pengaduan Kerusakan Fasilitas (Unggah Foto) -->
+      <g id="uc-complaint" filter="url(#uc-shadow)">
+        <ellipse cx="710" cy="410" rx="115" ry="34"
+                 fill="var(--uc-fill)" stroke="var(--uc-stroke)" stroke-width="2" />
+        <text x="710" y="402" text-anchor="middle" font-size="12" font-weight="700" fill="var(--uc-text)">
+          Input Pengaduan Kerusakan
+        </text>
+        <text x="710" y="418" text-anchor="middle" font-size="12" font-weight="700" fill="var(--uc-text)">
+          Fasilitas (Unggah Foto)
+        </text>
+      </g>
+
+      <!-- UC 5: Pindah Ruangan Terpinjam (Notifikasi Alasan) -->
+      <g id="uc-pindah" filter="url(#uc-shadow)">
+        <ellipse cx="510" cy="500" rx="115" ry="32"
+                 fill="var(--uc-fill)" stroke="var(--uc-stroke)" stroke-width="2" />
+        <text x="510" y="493" text-anchor="middle" font-size="12" font-weight="700" fill="var(--uc-text)">
+          Pindah Ruangan Terpinjam
+        </text>
+        <text x="510" y="509" text-anchor="middle" font-size="10.5" fill="var(--muted)">
+          (Disertai Notifikasi Alasan)
+        </text>
+      </g>
+
+      <!-- UC 6: Kirim Pesan Peringatan via WA -->
+      <g id="uc-wa" filter="url(#uc-shadow)">
+        <ellipse cx="360" cy="400" rx="95" ry="28"
+                 fill="var(--uc-fill)" stroke="var(--uc-stroke)" stroke-width="2" />
+        <text x="360" y="396" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--uc-text)">
+          Kirim Pesan Peringatan
+        </text>
+        <text x="360" y="411" text-anchor="middle" font-size="10.5" fill="#22c55e" font-weight="600">
+          via WhatsApp / Notif
+        </text>
+      </g>
+
+      <!-- UC 7: Kelola Status Perbaikan Fasilitas Ruangan -->
+      <g id="uc-perbaikan" filter="url(#uc-shadow)">
+        <ellipse cx="295" cy="660" rx="100" ry="32"
+                 fill="var(--uc-fill)" stroke="var(--uc-stroke)" stroke-width="2" />
+        <text x="295" y="653" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--uc-text)">
+          Kelola Status Perbaikan
+        </text>
+        <text x="295" y="669" text-anchor="middle" font-size="10" fill="var(--muted)">
+          Fasilitas Ruangan (PIC)
+        </text>
+      </g>
+
+      <!-- UC 8: Export Laporan & Rekapitulasi (Fitur Tambahan Dokumen SRS) -->
+      <g id="uc-rekap" filter="url(#uc-shadow)">
+        <ellipse cx="680" cy="660" rx="100" ry="30"
+                 fill="var(--uc-fill)" stroke="var(--uc-stroke)" stroke-width="2" />
+        <text x="680" y="655" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--uc-text)">
+          Export Rekap &amp; Laporan
+        </text>
+        <text x="680" y="671" text-anchor="middle" font-size="10" fill="var(--muted)">
+          (PDF &amp; Excel Sarpras)
+        </text>
+      </g>
+
+      <!-- Association for UC 8 (Waka/Admin -> Export) -->
+      <path d="M 115 220 C 200 360, 450 630, 580 660" stroke="var(--line-stroke)" stroke-width="1.6" fill="none" />
+
+
+      <!-- ================= <<INCLUDE>> & <<EXTEND>> RELATIONSHIPS ================= -->
+
+      <!-- 1. Pengajuan Peminjaman (UC3) --<<include>>--> Login (UC1) -->
+      <g id="rel-pengajuan-login">
+        <path d="M 510 280 L 510 130"
+              stroke="var(--include-stroke)" stroke-width="1.8" stroke-dasharray="5 4"
+              marker-end="url(#arrow-include)" fill="none" />
+        <rect x="465" y="145" width="90" height="20" rx="4"
+              fill="var(--badge-inc-bg)" />
+        <text x="510" y="159" text-anchor="middle" font-size="10" font-weight="700" fill="var(--badge-inc-txt)">
+          &lt;&lt;include&gt;&gt;
+        </text>
+      </g>
+
+      <!-- 2. Input Pengaduan (UC4) --<<include>>--> Login (UC1) -->
+      <g id="rel-complaint-login">
+        <path d="M 680 378 C 650 250, 590 160, 555 125"
+              stroke="var(--include-stroke)" stroke-width="1.8" stroke-dasharray="5 4"
+              marker-end="url(#arrow-include)" fill="none" />
+        <rect x="625" y="240" width="90" height="20" rx="4"
+              fill="var(--badge-inc-bg)" />
+        <text x="670" y="254" text-anchor="middle" font-size="10" font-weight="700" fill="var(--badge-inc-txt)">
+          &lt;&lt;include&gt;&gt;
+        </text>
+      </g>
+
+      <!-- 3. Kelola Status Perbaikan (UC7) --<<include>>--> Login (UC1) -->
+      <g id="rel-perbaikan-login">
+        <path d="M 285 628 C 240 450, 310 160, 440 115"
+              stroke="var(--include-stroke)" stroke-width="1.8" stroke-dasharray="5 4"
+              marker-end="url(#arrow-include)" fill="none" />
+        <rect x="235" y="320" width="90" height="20" rx="4"
+              fill="var(--badge-inc-bg)" />
+        <text x="280" y="334" text-anchor="middle" font-size="10" font-weight="700" fill="var(--badge-inc-txt)">
+          &lt;&lt;include&gt;&gt;
+        </text>
+      </g>
+
+      <!-- 4. Pindah Ruangan (UC5) --<<extend>>--> Pengajuan Peminjaman (UC3) -->
+      <g id="rel-pindah-pengajuan">
+        <path d="M 510 468 L 510 340"
+              stroke="var(--extend-stroke)" stroke-width="1.8" stroke-dasharray="5 4"
+              marker-end="url(#arrow-extend)" fill="none" />
+        <rect x="465" y="395" width="90" height="20" rx="4"
+              fill="var(--badge-ext-bg)" />
+        <text x="510" y="409" text-anchor="middle" font-size="10" font-weight="700" fill="var(--badge-ext-txt)">
+          &lt;&lt;extend&gt;&gt;
+        </text>
+      </g>
+
+      <!-- 5. Pindah Ruangan (UC5) --<<include>>--> Kirim WA (UC6) -->
+      <g id="rel-pindah-wa">
+        <path d="M 460 475 L 390 425"
+              stroke="var(--include-stroke)" stroke-width="1.8" stroke-dasharray="5 4"
+              marker-end="url(#arrow-include)" fill="none" />
+        <rect x="380" y="452" width="85" height="18" rx="4"
+              fill="var(--badge-inc-bg)" />
+        <text x="422" y="465" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--badge-inc-txt)">
+          &lt;&lt;include&gt;&gt;
+        </text>
+      </g>
+
+      <!-- 6. Export Rekap (UC8) --<<include>>--> Login (UC1) -->
+      <g id="rel-rekap-login">
+        <path d="M 700 630 C 740 450, 680 180, 570 120"
+              stroke="var(--include-stroke)" stroke-width="1.8" stroke-dasharray="5 4"
+              marker-end="url(#arrow-include)" fill="none" />
+        <rect x="705" y="490" width="90" height="20" rx="4"
+              fill="var(--badge-inc-bg)" />
+        <text x="750" y="504" text-anchor="middle" font-size="10" font-weight="700" fill="var(--badge-inc-txt)">
+          &lt;&lt;include&gt;&gt;
+        </text>
+      </g>
+
+    </svg>
+  </div>
+
+
+  <!-- ================= TABEL SPESIFIKASI SRS USE CASE ================= -->
+  <div class="doc-section">
+    <h2>Daftar Spesifikasi Use Case (Format Dokumen SRS Resmi)</h2>
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th style="width: 70px;">Kode</th>
+          <th style="width: 220px;">Nama Use Case</th>
+          <th style="width: 170px;">Aktor Terlibat</th>
+          <th style="width: 110px;">Relasi</th>
+          <th>Deskripsi Singkat</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>UC-01</strong></td>
+          <td><strong>Login &amp; Autentikasi</strong></td>
+          <td>
+            <span class="tag tag-actor">Waka/Admin</span>
+            <span class="tag tag-actor">Guru/Organisasi</span>
+            <span class="tag tag-actor">PIC Ruang</span>
+          </td>
+          <td><em>Core</em></td>
+          <td>Proses verifikasi kredensial pengguna (email/username, password, dan OTP WhatsApp Fonnte) untuk membuka akses dashboard berizin.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-02</strong></td>
+          <td><strong>Lihat Kalender &amp; Agenda Harian</strong></td>
+          <td>
+            <span class="tag tag-actor">Siswa/Tamu (Publik)</span>
+            <span class="tag tag-actor">Guru/Organisasi</span>
+            <span class="tag tag-actor">Waka/Admin</span>
+            <span class="tag tag-actor">PIC Ruang</span>
+          </td>
+          <td><em>Public</em></td>
+          <td>Melihat jadwal kegiatan, ketersediaan ruangan, dan agenda hari ini secara real-time tanpa harus login terlebih dahulu.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-03</strong></td>
+          <td><strong>Pengajuan Peminjaman Ruang</strong></td>
+          <td>
+            <span class="tag tag-actor">Guru/Organisasi</span>
+            <span class="tag tag-actor">Waka/Admin</span>
+          </td>
+          <td><span class="tag tag-inc">&lt;&lt;include&gt;&gt; UC-01</span></td>
+          <td>Guru atau pengurus organisasi mengajukan permohonan sewa/pakai ruangan dengan memilih tanggal, jam, dan deskripsi acara. Sistem mengecek bentrok otomatis.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-04</strong></td>
+          <td><strong>Input Pengaduan Kerusakan (Unggah Foto)</strong></td>
+          <td>
+            <span class="tag tag-actor">Guru/Organisasi</span>
+            <span class="tag tag-actor">Siswa/Tamu</span>
+          </td>
+          <td><span class="tag tag-inc">&lt;&lt;include&gt;&gt; UC-01</span></td>
+          <td>Melaporkan fasilitas atau sarpras yang mengalami kerusakan di ruangan tertentu dengan mengunggah foto bukti kamera dan deskripsi rinci.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-05</strong></td>
+          <td><strong>Pindah Ruangan Terpinjam</strong></td>
+          <td>
+            <span class="tag tag-actor">Waka/Admin</span>
+          </td>
+          <td>
+            <span class="tag tag-ext">&lt;&lt;extend&gt;&gt; UC-03</span>
+            <span class="tag tag-inc">&lt;&lt;include&gt;&gt; UC-06</span>
+          </td>
+          <td>Waka Sarpras memindahkan agenda yang telah disetujui ke ruangan pengganti jika terjadi kondisi darurat, wajib mengisi alasan pemindahan.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-06</strong></td>
+          <td><strong>Kirim Pesan Peringatan via WA</strong></td>
+          <td>
+            <em>Sistem (Otomatis)</em>
+          </td>
+          <td><span class="tag tag-inc">&lt;&lt;include&gt;&gt;</span></td>
+          <td>Mengirimkan notifikasi instan melalui WhatsApp Gateway Fonnte kepada pemohon saat ruangan dipindahkan, disetujui, atau ditolak.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-07</strong></td>
+          <td><strong>Kelola Status Perbaikan Fasilitas</strong></td>
+          <td>
+            <span class="tag tag-actor">PIC Ruang</span>
+            <span class="tag tag-actor">Waka/Admin</span>
+          </td>
+          <td><span class="tag tag-inc">&lt;&lt;include&gt;&gt; UC-01</span></td>
+          <td>Mengubah status progres perbaikan fasilitas (Belum Diperbaiki, Menunggu Part, Selesai) serta menambahkan catatan teknisi.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-08</strong></td>
+          <td><strong>Export Rekap &amp; Laporan Sarpras</strong></td>
+          <td>
+            <span class="tag tag-actor">Waka/Admin</span>
+          </td>
+          <td><span class="tag tag-inc">&lt;&lt;include&gt;&gt; UC-01</span></td>
+          <td>Mencetak dan mengunduh laporan rekapitulasi penggunaan ruangan dan riwayat kerusakan fasilitas dalam format PDF dan Excel.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const body = document.body;
+      const isDark = body.getAttribute('data-theme') === 'dark';
+      const newTheme = isDark ? 'light' : 'dark';
+      body.setAttribute('data-theme', newTheme);
+      document.getElementById('theme-label').textContent = isDark 
+        ? 'Ganti ke Tema Gelap (Dark Mode)' 
+        : 'Ganti ke Tema Terang (SRS Print)';
+    }
+  </script>
+</body>
+</html>
+

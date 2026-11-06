@@ -35,8 +35,8 @@
     <div class="asset-card purple">
       <div class="asset-card-top">
         <div>
-          <div class="asset-card-value">Aula &amp; Lab</div>
-          <div class="asset-card-sub">Fasilitas Utama</div>
+          <div class="asset-card-value">{{ $availableRooms->count() ?? 0 }} Ruang</div>
+          <div class="asset-card-sub">Kosong Hari Ini</div>
         </div>
       </div>
       <div class="asset-card-bottom">
@@ -122,8 +122,44 @@
     </section>
   </div>
 
-  {{-- Right Column: Dark Action Card --}}
+  {{-- Right Column: Dark Action Card & Ruang Kosong Widget --}}
   <div>
+    {{-- Card: Ruang Kosong Hari Ini --}}
+    <div class="card" style="margin-bottom:1.25rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981"></span>
+          <h3 style="margin:0;font-size:1.05rem;font-weight:700">Ruang Kosong Hari Ini</h3>
+        </div>
+        <span class="badge ok" style="font-size:.72rem">{{ $availableRooms->count() ?? 0 }} Ruangan Bebas</span>
+      </div>
+      <p class="muted" style="font-size:.8rem;margin:0 0 .75rem">
+        Ruang laboratorium &amp; fasilitas yang belum memiliki jadwal kegiatan pada hari ini:
+      </p>
+
+      <div style="max-height:220px;overflow-y:auto;display:grid;gap:.4rem;padding-right:4px">
+        @forelse($availableRooms ?? [] as $r)
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .75rem;background:var(--c-surface-sub);border:1px solid var(--border);border-radius:10px;font-size:.82rem">
+            <div>
+              <strong style="color:var(--ink)">{{ $r->room_name }}</strong>
+              <div class="muted" style="font-size:.72rem">{{ $r->location ?: 'Gedung Sekolah' }} · Kapasitas {{ $r->capacity }}</div>
+            </div>
+            @auth
+              @if($user->isAdmin() || $user->isGuru() || $user->isWaka())
+                <a href="{{ route('events.create', ['room_id' => $r->id]) }}" class="btn sm" style="padding:.25rem .55rem;font-size:.72rem">Pinjam</a>
+              @else
+                <span class="badge ok" style="font-size:.68rem">Bebas</span>
+              @endif
+            @else
+              <span class="badge ok" style="font-size:.68rem">Bebas</span>
+            @endauth
+          </div>
+        @empty
+          <p class="muted center" style="font-size:.8rem;margin:0;padding:.75rem">Semua ruangan terisi jadwal hari ini.</p>
+        @endforelse
+      </div>
+    </div>
+
     <div class="dark-action-banner">
       <span class="banner-badge">LAYANAN TERPADU</span>
       <h3 class="banner-title">Peminjaman Ruang &amp; Lapor Kerusakan</h3>

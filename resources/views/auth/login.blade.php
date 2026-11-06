@@ -25,9 +25,9 @@
   </form>
 
   <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);text-align:center">
-    <p style="margin:0"><a href="{{ route('forgot') }}" style="font-size:.85rem">Lupa password akun?</a></p>
+    <p style="margin:0"><a href="{{ route('forgot') }}" style="font-size:.85rem">Lupa password akun? Reset via OTP (Gmail &amp; WhatsApp) &rarr;</a></p>
     <p class="muted" style="font-size:.82rem;margin:.5rem 0 0">
-      Siswa atau tamu tidak perlu login. <a href="{{ route('calendar') }}">Lihat Jadwal Kalender →</a>
+      Siswa atau tamu tidak perlu login. <a href="{{ route('calendar') }}">Lihat Jadwal Kalender &rarr;</a>
     </p>
   </div>
 </section>

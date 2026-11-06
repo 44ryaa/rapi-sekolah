@@ -10,6 +10,9 @@
   $cntTotal   = $events->count();
   $cntPending = $events->where('status', 'Diajukan')->count();
   $cntApproved= $events->where('status', 'Disetujui')->count();
+  $cntToday   = $events->where('time_group', 'today')->count();
+  $cntUpcoming= $events->where('time_group', 'upcoming')->count();
+  $cntPast    = $events->where('time_group', 'past')->count();
 @endphp
 
 {{-- ═══════════════ TOP STATS BAR (Image 2 Replica) ═══════════════ --}}
@@ -27,9 +30,11 @@
     <div class="hero-stat-sub">{{ $cntPending }} pengajuan menunggu persetujuan Waka/Admin</div>
 
     <div class="hero-stat-pills">
-      <button class="filter-pill active" type="button">Semua</button>
-      <button class="filter-pill" type="button" onclick="filterEventStatus('Diajukan')">Menunggu ({{ $cntPending }})</button>
-      <button class="filter-pill" type="button" onclick="filterEventStatus('Disetujui')">Disetujui ({{ $cntApproved }})</button>
+      <button class="filter-pill active" type="button" onclick="filterEvents('all')">Semua ({{ $cntTotal }})</button>
+      <button class="filter-pill" type="button" onclick="filterEvents('today')">Hari Ini ({{ $cntToday }})</button>
+      <button class="filter-pill" type="button" onclick="filterEvents('upcoming')">Mendatang ({{ $cntUpcoming }})</button>
+      <button class="filter-pill" type="button" onclick="filterEvents('past')">Selesai ({{ $cntPast }})</button>
+      <button class="filter-pill" type="button" onclick="filterEvents('pending')">Menunggu ACC ({{ $cntPending }})</button>
     </div>
   </div>
 
@@ -127,7 +132,7 @@
     @php
       $cls = ['Diajukan'=>'warn','Disetujui'=>'ok','Ditolak'=>'bad'][$ev->status] ?? '';
     @endphp
-    <article class="card item" data-status="{{ $ev->status }}">
+    <article class="card item" data-status="{{ $ev->status }}" data-time="{{ $ev->time_group }}">
       {{-- Header with squircle icon --}}
       <div class="item-top">
         <div class="item-title-wrap">
@@ -139,7 +144,39 @@
             <span class="muted" style="font-size:.78rem">{{ $ev->room->room_name }}</span>
           </div>
         </div>
-        <span class="badge {{ $cls }}">{{ $ev->status }}</span>
+
+        <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
+          {{-- Status Pelaksanaan Operasional (PIC & Guru) --}}
+          @if($ev->exec_status === 'Sedang Berlangsung')
+            <span class="badge ok" style="background:#10b981;color:#fff;font-weight:700">
+              <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;margin-right:4px"></span>
+              Sedang Berlangsung
+            </span>
+          @elseif($ev->exec_status === 'Belum Terlaksana')
+            <span class="badge" style="background:var(--c-surface-sub);border:1px solid var(--border);color:var(--muted);font-size:.72rem">
+              Belum Terlaksana
+            </span>
+          @else
+            <span class="badge" style="background:transparent;border:1px solid var(--border);color:var(--muted);opacity:.7;font-size:.72rem">
+              Sudah Terlaksana
+            </span>
+          @endif
+
+          {{-- Status Persetujuan Waka (Diperjelas kontrasnya) --}}
+          @if($ev->status === 'Diajukan')
+            <span class="badge warn" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;font-weight:700">
+              Menunggu ACC
+            </span>
+          @elseif($ev->status === 'Disetujui')
+            <span class="badge ok" style="background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;font-weight:700">
+              ✓ Disetujui
+            </span>
+          @else
+            <span class="badge bad" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;font-weight:700">
+              ✕ Ditolak
+            </span>
+          @endif
+        </div>
       </div>
 
       {{-- Info --}}
@@ -299,13 +336,34 @@ document.querySelectorAll('[data-move]').forEach(btn => {
   });
 });
 
-function filterEventStatus(status) {
+function filterEvents(type) {
   document.querySelectorAll('article.card.item').forEach(el => {
-    if (!status || el.dataset.status === status) {
-      el.style.display = '';
-    } else {
-      el.style.display = 'none';
+    let show = true;
+    if (type === 'all') {
+      show = true;
+    } else if (type === 'today') {
+      show = el.dataset.time === 'today';
+    } else if (type === 'upcoming') {
+      show = el.dataset.time === 'upcoming';
+    } else if (type === 'past') {
+      show = el.dataset.time === 'past';
+    } else if (type === 'pending') {
+      show = el.dataset.status === 'Diajukan';
+    } else if (type === 'approved') {
+      show = el.dataset.status === 'Disetujui';
     }
+    el.style.display = show ? '' : 'none';
+  });
+
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    const isTarget = btn.getAttribute('onclick')?.includes(`'${type}'`);
+    btn.classList.toggle('active', isTarget);
+  });
+}
+
+function filterEventStatus(status) {
+  filterEvents(status === 'Diajukan' ? 'pending' : (status === 'Disetujui' ? 'approved' : 'all'));
+}
   });
 }
 </script>

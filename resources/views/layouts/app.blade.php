@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#16120f">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="RAPI-Sekolah">
 <meta name="format-detection" content="telephone=no">
 <title>RAPI-Sekolah · Sarpras Sekolah</title>
@@ -13,6 +13,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
+<script>
+  (function() {
+    try {
+      var saved = localStorage.getItem('rapi_theme');
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch(e) {}
+  })();
+</script>
 @stack('head')
 </head>
 <body>
@@ -30,6 +40,7 @@
       str_starts_with($route, 'events')     => 'Agenda & Peminjaman Ruang',
       str_starts_with($route, 'complaints') => 'Pengaduan & Perbaikan',
       str_starts_with($route, 'admin.rooms')=> 'Kelola Ruang & PIC',
+      str_starts_with($route, 'reports')    => 'Laporan Sarpras',
       str_starts_with($route, 'admin.users')=> 'Manajemen Pengguna',
       str_starts_with($route, 'profile')    => 'Pengaturan Akun',
       default => 'Overview Sistem',
@@ -55,6 +66,22 @@
     </div>
   </a>
   <div class="topbar-right">
+    <button type="button" class="theme-toggle-btn header-icon-btn topbar-icon-btn js-theme-toggle" title="Ganti Tema Gelap / Terang" aria-label="Ganti Tema">
+      <svg class="theme-icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <svg class="theme-icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
     @auth
       <button type="button" class="header-icon-btn topbar-icon-btn" id="openMobileNotifBtn" title="Pemberitahuan">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -134,6 +161,12 @@
             </span>
             Ruang &amp; PIC
           </a>
+          <a href="{{ route('reports.index') }}" class="nav-link {{ $isActive('reports') }}">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </span>
+            Laporan Sarpras
+          </a>
         @endif
 
         {{-- Kelola: Admin Only (Pengguna) --}}
@@ -198,6 +231,24 @@
           </span>
           <input type="text" id="liveSearchInput" placeholder="Cari ruang, agenda, pengaduan..." autocomplete="off">
         </div>
+
+        {{-- Theme Switcher Button --}}
+        <button type="button" class="theme-toggle-btn header-icon-btn js-theme-toggle" title="Ganti Tema Gelap / Terang" aria-label="Ganti Tema">
+          <svg class="theme-icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="theme-icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
 
         @auth
           {{-- Notification Bell --}}
@@ -266,9 +317,9 @@
     </a>
 
     @if($user->isAdmin() || $user->isWaka())
-    <a href="{{ route('admin.rooms') }}" class="{{ $isActive('admin') }}">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4H3v16h18V9z"/><polyline points="13 4 13 9 21 9"/></svg>
-      <span>Ruang</span>
+    <a href="{{ route('reports.index') }}" class="{{ $isActive('reports') }}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>Laporan</span>
     </a>
     @endif
 
@@ -286,6 +337,45 @@
 
 {{-- ═══════════════ NOTIFICATION MODAL (Opened on click, NO auto popup delay!) ═══════════════ --}}
 @auth
+@php
+  $moveNotifs = $user->unreadNotifications()->where('message', 'like', '%dipindahkan ke%')->latest()->get();
+@endphp
+
+@if($moveNotifs->isNotEmpty())
+  {{-- Pop-up Peringatan Dinamis bagi Guru yang Ruangannya Dipindah (Rubrik Hal. 6) --}}
+  <dialog id="moveNoticeDialog" class="modal" style="max-width:480px;border:2px solid #f59e0b;border-radius:18px;padding:1.5rem">
+    <div style="text-align:center;margin-bottom:1rem">
+      <div style="width:54px;height:54px;border-radius:50%;background:#fef3c7;color:#d97706;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <h2 style="font-size:1.2rem;margin:0;color:#92400e">Peringatan Pemindahan Ruangan</h2>
+      <p style="font-size:.82rem;color:var(--muted);margin:4px 0 0">Waka Sarpras telah melakukan pemindahan jadwal peminjaman Anda</p>
+    </div>
+
+    <div style="display:grid;gap:.75rem;margin-bottom:1.25rem">
+      @foreach($moveNotifs as $mn)
+        <div style="background:#fffbeb;border-left:4px solid #f59e0b;padding:.85rem;border-radius:8px;font-size:.88rem;color:#78350f;line-height:1.55">
+          {{ $mn->message }}
+          <time style="display:block;font-size:.72rem;color:#b45309;margin-top:4px">{{ $mn->created_at->format('d M Y H:i') }}</time>
+        </div>
+      @endforeach
+    </div>
+
+    <form method="post" action="{{ route('notifications.read') }}">
+      @csrf
+      <button type="submit" class="btn block" style="background:#f59e0b;color:#fff;border:0;font-weight:700">
+        Saya Mengerti &amp; Konfirmasi
+      </button>
+    </form>
+  </dialog>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const moveDlg = document.getElementById('moveNoticeDialog');
+      if (moveDlg) moveDlg.showModal();
+    });
+  </script>
+@endif
+
 <dialog id="notifDialog" class="modal" aria-labelledby="ntTitle">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
     <h2 id="ntTitle" style="display:flex;align-items:center;gap:.5rem;margin:0">
@@ -366,6 +456,20 @@ function showToast(message, type = 'ok') {
     setTimeout(() => item.remove(), 300);
   }, 3500);
 }
+
+// Theme Toggle (Dark / Light)
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try {
+    localStorage.setItem('rapi_theme', next);
+  } catch(e) {}
+}
+
+document.querySelectorAll('.js-theme-toggle').forEach(btn => {
+  btn.addEventListener('click', toggleTheme);
+});
 
 // Live Search Filter across item cards
 const searchInput = document.getElementById('liveSearchInput');

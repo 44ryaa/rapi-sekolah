@@ -19,6 +19,12 @@
 /public/hot
 /public/storage
 /storage/*.key
+/database/*.sqlite
+/database/*.sqlite-shm
+/database/*.sqlite-wal
+/public/mover.php
+/public/assets.zip
+/public/download/
 /storage/pail
 /vendor
 _ide_helper.php

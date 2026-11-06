@@ -9,10 +9,10 @@
   $guru       = $user->isGuru();
 
   // Counters for the Overview cards (Image 2 style)
-  $cntTotal   = $complaints->count();
-  $cntPending = $complaints->where('status_repair', 'Belum Diperbaiki')->count();
-  $cntProcess = $complaints->where('status_repair', 'Menunggu Spare Part')->count();
-  $cntDone    = $complaints->where('status_repair', 'Sudah Diperbaiki')->count();
+  $cntTotal   = $cntTotal ?? $complaints->total();
+  $cntPending = $cntPending ?? 0;
+  $cntProcess = $cntProcess ?? 0;
+  $cntDone    = $cntDone ?? 0;
 
   // Badge classes
   $repairCls  = ['Belum Diperbaiki'=>'bad', 'Menunggu Spare Part'=>'warn', 'Sudah Diperbaiki'=>'ok'];
@@ -163,21 +163,29 @@
         · PIC: <b>{{ $c->room->pic->fullname ?? 'Belum Ditunjuk' }}</b>
       </p>
 
-      @if($c->repair_note)
+      @if($c->status_repair === 'Sudah Diperbaiki')
+        <div style="margin-top:.6rem;padding:.5rem .75rem;background:rgba(16, 185, 129, 0.08);border-left:3.5px solid #10b981;border-radius:6px;font-size:.82rem">
+          <strong style="color:#059669">Keterangan Perbaikan (Selesai):</strong>
+          <span style="display:block;margin-top:.2rem;color:var(--ink)">{{ $c->repair_note ?: 'Kerusakan telah selesai diperbaiki dan diuji fungsi oleh PIC.' }}</span>
+        </div>
+      @elseif($c->repair_note)
         <p class="note"><b>Catatan Penanganan PIC:</b> {{ $c->repair_note }}</p>
       @endif
 
-      {{-- ── WhatsApp overdue reminder (Admin & Waka) ── --}}
+      {{-- ── WhatsApp reminder (Admin & Waka) ── --}}
       @if($canApprove && $c->status_repair === 'Belum Diperbaiki')
         <div class="actions" style="margin-top:.6rem">
-          @if($c->overdue && $c->wa)
+          @if($c->wa)
             <a class="btn wa" href="{{ $c->wa }}" target="_blank" rel="noopener">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-              Kirim Peringatan WhatsApp ke PIC
+              Kirim Peringatan WhatsApp ke PIC ({{ $c->room->pic->fullname ?? 'PIC' }})
+              @if($c->overdue)
+                <span style="background:rgba(0,0,0,0.2);padding:1px 6px;border-radius:4px;font-size:.7rem;margin-left:4px">Lewat Batas</span>
+              @endif
             </a>
           @else
-            <button class="btn wa" disabled style="opacity:.6">
-              {{ $c->wa ? 'Peringatan WhatsApp aktif setelah '.(int)$limitH.' jam' : 'PIC belum mendaftarkan nomor HP' }}
+            <button class="btn wa" disabled style="opacity:.6" title="Tambahkan nomor HP PIC di menu Manajemen Pengguna">
+              PIC Belum Memiliki Nomor HP
             </button>
           @endif
         </div>
@@ -214,6 +222,28 @@
       @endif
     </article>
     @endforeach
+
+    {{-- ── Pagination 5 Laporan Kerusakan (Sesuai Catatan Revisi) ── --}}
+    @if($complaints->hasPages())
+      <div style="margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem">
+        <span class="muted" style="font-size:.82rem">
+          Halaman <b>{{ $complaints->currentPage() }}</b> dari <b>{{ $complaints->lastPage() }}</b> · Total <b>{{ $complaints->total() }}</b> pengaduan (5/halaman)
+        </span>
+        <div style="display:flex;gap:.35rem">
+          @if($complaints->onFirstPage())
+            <span class="btn sm ghost" style="opacity:.4;cursor:not-allowed">« Sebelumnya</span>
+          @else
+            <a href="{{ $complaints->previousPageUrl() }}" class="btn sm ghost">« Sebelumnya</a>
+          @endif
+
+          @if($complaints->hasMorePages())
+            <a href="{{ $complaints->nextPageUrl() }}" class="btn sm">Berikutnya »</a>
+          @else
+            <span class="btn sm ghost" style="opacity:.4;cursor:not-allowed">Berikutnya »</span>
+          @endif
+        </div>
+      </div>
+    @endif
   </div>
 
   {{-- Right Column: Dark Action Card (Image 2 Replica) --}}

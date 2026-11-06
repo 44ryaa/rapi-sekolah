@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRS UI · 05 Manajemen Ruangan & PIC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { height: 100vh; max-height: 100vh; overflow: hidden; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #e8e2d5; }
+    .card-real { background: #ffffff; border: 1.5px solid #ded6c8; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
+  </style>
+</head>
+<body class="p-4 flex items-center justify-center h-screen box-border text-[#231b14]">
+
+  <div class="max-w-4xl w-full card-real p-6 space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-[#e5ded2] text-xs">
+      <a href="02-dashboard-calendar.html" class="font-bold flex items-center gap-1.5 text-[#15110e] hover:text-[#c87d32]"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
+      <span class="font-black text-sm text-[#15110e]">Master Data Ruang & PIC</span>
+      <span class="px-2.5 py-0.5 bg-purple-100 text-purple-900 rounded-full text-[10px] font-bold">Admin & Waka</span>
+    </div>
+
+    <div class="flex justify-between items-center">
+      <div>
+        <h2 class="text-base font-extrabold text-[#15110e]">Daftar Ruangan Sarpras Sekolah</h2>
+        <p class="text-[11px] text-[#7d7367]">Kelola kapasitas fasilitas dan penanggung jawab (PIC) teknis.</p>
+      </div>
+      <button class="px-3 py-1.5 bg-[#15110e] text-white rounded-xl font-bold text-xs hover:bg-[#251e18] transition shadow">+ Tambah Ruang</button>
+    </div>
+
+    <div class="overflow-x-auto border border-[#e5ded2] rounded-xl shadow-sm">
+      <table class="w-full text-left text-xs">
+        <thead class="bg-[#faf8f4] border-b border-[#e5ded2] uppercase text-[10px] font-extrabold text-[#7d7367]">
+          <tr>
+            <th class="py-2.5 px-3.5">Nama Ruangan</th>
+            <th class="py-2.5 px-3.5">Lokasi Gedung</th>
+            <th class="py-2.5 px-3.5">Kapasitas</th>
+            <th class="py-2.5 px-3.5">PIC Ruangan</th>
+            <th class="py-2.5 px-3.5 text-center">Status</th>
+            <th class="py-2.5 px-3.5 text-right">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#f0ebe1] font-medium text-[#15110e]">
+          <tr>
+            <td class="py-2.5 px-3.5 font-bold">Lab Komputer 1</td>
+            <td class="py-2.5 px-3.5 text-[#7d7367]">Gedung B Lantai 2</td>
+            <td class="py-2.5 px-3.5">36 PC / Siswa</td>
+            <td class="py-2.5 px-3.5"><span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md font-semibold text-[11px]">Budi Santoso, S.Kom</span></td>
+            <td class="py-2.5 px-3.5 text-center"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full text-[9px] font-bold">Tersedia</span></td>
+            <td class="py-2.5 px-3.5 text-right space-x-2"><button class="font-bold text-[#c87d32] hover:underline">Edit</button></td>
+          </tr>
+          <tr>
+            <td class="py-2.5 px-3.5 font-bold">Lab Komputer 2</td>
+            <td class="py-2.5 px-3.5 text-[#7d7367]">Gedung B Lantai 2</td>
+            <td class="py-2.5 px-3.5">36 PC / Siswa</td>
+            <td class="py-2.5 px-3.5"><span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md font-semibold text-[11px]">Rian Hidayat, S.Pd</span></td>
+            <td class="py-2.5 px-3.5 text-center"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full text-[9px] font-bold">Tersedia</span></td>
+            <td class="py-2.5 px-3.5 text-right space-x-2"><button class="font-bold text-[#c87d32] hover:underline">Edit</button></td>
+          </tr>
+          <tr>
+            <td class="py-2.5 px-3.5 font-bold">Aula Utama Pertemuan</td>
+            <td class="py-2.5 px-3.5 text-[#7d7367]">Gedung Pusat Lantai 1</td>
+            <td class="py-2.5 px-3.5">200 Kursi</td>
+            <td class="py-2.5 px-3.5"><span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md font-semibold text-[11px]">Drs. H. Ahmad Fauzi</span></td>
+            <td class="py-2.5 px-3.5 text-center"><span class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full text-[9px] font-bold">Terpakai</span></td>
+            <td class="py-2.5 px-3.5 text-right space-x-2"><button class="font-bold text-[#c87d32] hover:underline">Edit</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex justify-between items-center text-[10px] text-[#7d7367] pt-1 border-t border-[#e5ded2]">
+      <span>Total 24 ruangan sarpras terdata</span>
+      <span class="font-bold text-[#15110e]">SRS UI: Master Ruang</span>
+    </div>
+  </div>
+
+</body>
+</html>

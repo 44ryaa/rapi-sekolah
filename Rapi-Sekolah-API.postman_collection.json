@@ -1,0 +1,389 @@
+{
+  "info": {
+    "name": "Rapi Sekolah API",
+    "description": "REST API untuk Rapi Sekolah.\n\nCara pakai:\n1. Import collection ini ke Postman\n2. Variable base_url sudah diset ke http://localhost:8000\n3. Jalankan Login -> token otomatis tersimpan\n4. Semua request lain langsung pakai token tersebut",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000", "type": "string" },
+    { "key": "token",    "value": "",                      "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "const res = pm.response.json();",
+                "if (res.token) {",
+                "  pm.collectionVariables.set('token', res.token);",
+                "  pm.test('Login OK - token tersimpan', () => pm.response.to.have.status(200));",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/login", "host": ["{{base_url}}"], "path": ["api","login"] }
+          }
+        },
+        {
+          "name": "Profil Saya",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/me", "host": ["{{base_url}}"], "path": ["api","me"] }
+          }
+        },
+        {
+          "name": "Update Profil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullname\": \"Nama Baru\",\n  \"phone_number\": \"08123456789\",\n  \"password\": \"passwordbaru\",\n  \"password_confirmation\": \"passwordbaru\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/me", "host": ["{{base_url}}"], "path": ["api","me"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.collectionVariables.set('token', '');",
+                "pm.test('Logout OK', () => pm.response.to.have.status(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/logout", "host": ["{{base_url}}"], "path": ["api","logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms (Ruangan)",
+      "item": [
+        {
+          "name": "Daftar Ruangan",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/rooms?active=1",
+              "host": ["{{base_url}}"], "path": ["api","rooms"],
+              "query": [{ "key": "active", "value": "1", "description": "1=aktif saja, 0=semua" }]
+            }
+          }
+        },
+        {
+          "name": "Detail Ruangan",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/rooms/1", "host": ["{{base_url}}"], "path": ["api","rooms","1"] }
+          }
+        },
+        {
+          "name": "Tambah Ruangan [Admin]",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_name\": \"Lab Komputer 3\",\n  \"capacity\": 35,\n  \"location\": \"Gedung B Lt. 2\",\n  \"pic_id\": null,\n  \"is_active\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/rooms", "host": ["{{base_url}}"], "path": ["api","rooms"] }
+          }
+        },
+        {
+          "name": "Edit Ruangan [Admin]",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_name\": \"Lab Komputer 3\",\n  \"capacity\": 40,\n  \"location\": \"Gedung B Lt. 2\",\n  \"is_active\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/rooms/1", "host": ["{{base_url}}"], "path": ["api","rooms","1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Events (Peminjaman Ruang)",
+      "item": [
+        {
+          "name": "Cek Slot Tersedia",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/events/slots?room_id=1&date=2026-11-10",
+              "host": ["{{base_url}}"], "path": ["api","events","slots"],
+              "query": [
+                { "key": "room_id", "value": "1" },
+                { "key": "date", "value": "2026-11-10", "description": "Format YYYY-MM-DD" }
+              ]
+            },
+            "description": "Response berisi 6 sesi (1-5 normal, 6=penuh) beserta status taken/available"
+          }
+        },
+        {
+          "name": "Daftar Agenda",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/events?status=&room_id=&date_from=&date_to=",
+              "host": ["{{base_url}}"], "path": ["api","events"],
+              "query": [
+                { "key": "status",    "value": "", "description": "Diajukan | Disetujui | Ditolak" },
+                { "key": "room_id",   "value": "" },
+                { "key": "date_from", "value": "", "description": "YYYY-MM-DD" },
+                { "key": "date_to",   "value": "", "description": "YYYY-MM-DD" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Detail Agenda",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/events/1", "host": ["{{base_url}}"], "path": ["api","events","1"] }
+          }
+        },
+        {
+          "name": "Buat Pengajuan Peminjaman",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": 1,\n  \"event_name\": \"Rapat Guru Semester Ganjil\",\n  \"date\": \"2026-11-10\",\n  \"session_start\": 1,\n  \"session_end\": 3\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/events", "host": ["{{base_url}}"], "path": ["api","events"] },
+            "description": "session_start & session_end:\n1=07:00-08:30, 2=08:30-10:00, 3=10:15-11:45\n4=13:00-14:30, 5=14:30-16:00, 6=Sesi Penuh (session_end tidak perlu)"
+          }
+        },
+        {
+          "name": "Approve Pengajuan [Admin/Waka]",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"approve\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/events/1/review", "host": ["{{base_url}}"], "path": ["api","events","1","review"] }
+          }
+        },
+        {
+          "name": "Reject Pengajuan [Admin/Waka]",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"reject\",\n  \"reject_reason\": \"Ruangan sedang dalam perbaikan AC.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/events/1/review", "host": ["{{base_url}}"], "path": ["api","events","1","review"] }
+          }
+        },
+        {
+          "name": "Hapus Agenda",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/events/1", "host": ["{{base_url}}"], "path": ["api","events","1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Complaints (Pengaduan Kerusakan)",
+      "item": [
+        {
+          "name": "Daftar Pengaduan",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/complaints?status=&status_repair=&room_id=",
+              "host": ["{{base_url}}"], "path": ["api","complaints"],
+              "query": [
+                { "key": "status",        "value": "", "description": "Diajukan | Diterima | Ditolak" },
+                { "key": "status_repair", "value": "", "description": "Belum Diperbaiki | Menunggu Spare Part | Sudah Diperbaiki" },
+                { "key": "room_id",       "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Detail Pengaduan",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/complaints/1", "host": ["{{base_url}}"], "path": ["api","complaints","1"] }
+          }
+        },
+        {
+          "name": "Kirim Pengaduan + Foto (form-data)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "room_id",     "value": "1",   "type": "text" },
+                { "key": "description", "value": "Proyektor tidak menyala dan kabel HDMI rusak.", "type": "text" },
+                { "key": "photo",       "type": "file", "src": "", "description": "JPG/PNG maks 5MB (opsional)" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/api/complaints", "host": ["{{base_url}}"], "path": ["api","complaints"] }
+          }
+        },
+        {
+          "name": "Kirim Pengaduan tanpa Foto (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": 1,\n  \"description\": \"Kursi di baris ketiga banyak yang patah dan tidak layak pakai.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/complaints", "host": ["{{base_url}}"], "path": ["api","complaints"] }
+          }
+        },
+        {
+          "name": "Update Status Perbaikan [PIC]",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status_repair\": \"Sudah Diperbaiki\",\n  \"repair_note\": \"Proyektor diganti unit baru dari gudang.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/complaints/1/status", "host": ["{{base_url}}"], "path": ["api","complaints","1","status"] },
+            "description": "status_repair: Belum Diperbaiki | Menunggu Spare Part | Sudah Diperbaiki\nHanya PIC ruang yang dapat akses."
+          }
+        },
+        {
+          "name": "Hapus Pengaduan",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/complaints/1", "host": ["{{base_url}}"], "path": ["api","complaints","1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports (Laporan)",
+      "item": [
+        {
+          "name": "Laporan Harian",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/reports?period=daily&date=2026-10-25",
+              "host": ["{{base_url}}"], "path": ["api","reports"],
+              "query": [
+                { "key": "period",  "value": "daily" },
+                { "key": "date",    "value": "2026-10-25" },
+                { "key": "room_id", "value": "", "description": "Filter ruangan (opsional)" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Laporan Mingguan",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/reports?period=weekly&date=2026-10-25",
+              "host": ["{{base_url}}"], "path": ["api","reports"],
+              "query": [
+                { "key": "period",  "value": "weekly" },
+                { "key": "date",    "value": "2026-10-25", "description": "Tanggal mana saja dalam minggu itu" },
+                { "key": "room_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Laporan Bulanan",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/reports?period=monthly&month=10&year=2026",
+              "host": ["{{base_url}}"], "path": ["api","reports"],
+              "query": [
+                { "key": "period",  "value": "monthly" },
+                { "key": "month",   "value": "10" },
+                { "key": "year",    "value": "2026" },
+                { "key": "room_id", "value": "" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

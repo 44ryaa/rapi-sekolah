@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAPI-Sekolah · Wireframe Hitam Putih (B&W) Semua Role</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            black: '#111111',
+            darkgray: '#222222',
+            midgray: '#555555',
+            lightgray: '#eeeeee',
+            bordergray: '#cccccc',
+            softbg: '#f8f8f8',
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #111111;
+    }
+    .wireframe-box {
+      background: #ffffff;
+      border: 1.5px solid #222222;
+      border-radius: 18px;
+      box-shadow: 4px 4px 0px #222222;
+    }
+    .wireframe-inner {
+      border: 1.5px solid #333333;
+      border-radius: 12px;
+    }
+    .badge-bw {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1.2px solid #222222;
+      background: #ffffff;
+      color: #111111;
+    }
+    .badge-bw.solid {
+      background: #111111;
+      color: #ffffff;
+    }
+    /* Mode Grayscale Full */
+    .grayscale-mode {
+      filter: grayscale(100%);
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+
+  <!-- Header Bar Wireframe (Hitam Putih Murni) -->
+  <header class="max-w-[1700px] mx-auto mb-8 bg-white text-black p-6 rounded-2xl border-2 border-black flex flex-col xl:flex-row xl:items-center justify-between gap-5 shadow-[5px_5px_0px_#111111]">
+    <div class="flex items-center gap-4">
+      <div class="w-14 h-14 rounded-xl bg-black text-white flex items-center justify-center text-2xl font-bold flex-shrink-0">
+        <i class="fa-solid fa-shapes"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="badge-bw solid">Hitam & Putih (B&W)</span>
+          <h1 class="text-2xl font-black tracking-tight">RAPI-Sekolah · Wireframe Arsitektur Role</h1>
+        </div>
+        <p class="text-xs text-midgray mt-1">Struktur Blueprint Bersih Tanpa Warna: Dari <strong>Admin</strong>, <strong>Waka Sarpras</strong>, <strong>Guru</strong>, <strong>Organisasi</strong>, hingga <strong>Siswa / Tamu</strong></p>
+      </div>
+    </div>
+
+    <!-- Quick Role Filter Controls -->
+    <div class="flex flex-wrap items-center gap-2 text-xs">
+      <button onclick="filterRole('all')" class="px-3.5 py-2 rounded-xl bg-black text-white font-bold transition">Semua Role</button>
+      <button onclick="filterRole('admin')" class="px-3.5 py-2 rounded-xl bg-white text-black border-2 border-black font-bold hover:bg-lightgray transition">1. Admin</button>
+      <button onclick="filterRole('waka')" class="px-3.5 py-2 rounded-xl bg-white text-black border-2 border-black font-bold hover:bg-lightgray transition">2. Waka Sarpras</button>
+      <button onclick="filterRole('guru')" class="px-3.5 py-2 rounded-xl bg-white text-black border-2 border-black font-bold hover:bg-lightgray transition">3. Guru</button>
+      <button onclick="filterRole('organisasi')" class="px-3.5 py-2 rounded-xl bg-white text-black border-2 border-black font-bold hover:bg-lightgray transition">4. Organisasi</button>
+      <button onclick="filterRole('siswa')" class="px-3.5 py-2 rounded-xl bg-white text-black border-2 border-black font-bold hover:bg-lightgray transition">5. Siswa/Tamu</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════ ROLE SCREENS GRID (HITAM PUTIH) ═══════════════ -->
+  <div class="max-w-[1700px] mx-auto grid grid-cols-1 xl:grid-cols-2 gap-8" id="screensGrid">
+
+    <!-- ── ROLE 1: ADMINISTRATOR ── -->
+    <div class="wireframe-box p-6 flex flex-col justify-between" data-role="admin">
+      <div>
+        <div class="flex items-center justify-between pb-3 mb-4 border-b-2 border-black">
+          <div class="flex items-center gap-2">
+            <span class="badge-bw solid">Role: Administrator</span>
+            <span class="text-xs font-bold">Wewenang Penuh (Full Control)</span>
+          </div>
+          <span class="badge-bw">Semua Menu Aktif</span>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-4 bg-softbg p-4 rounded-xl border border-black mb-4">
+          <!-- Sidebar B&W -->
+          <div class="w-full md:w-44 bg-black text-white p-3 rounded-lg text-xs space-y-1">
+            <span class="text-[9px] uppercase tracking-wider text-gray-400 font-bold block mb-1">Navigasi Admin</span>
+            <div class="px-2 py-1.5 rounded bg-white text-black font-bold flex items-center gap-2"><i class="fa-solid fa-gauge text-[10px]"></i> Dashboard</div>
+            <div class="px-2 py-1 rounded hover:bg-gray-800 flex items-center gap-2"><i class="fa-regular fa-calendar text-[10px]"></i> Kalender</div>
+            <div class="px-2 py-1 rounded hover:bg-gray-800 flex items-center gap-2"><i class="fa-solid fa-table-cells text-[10px]"></i> Agenda Ruang</div>
+            <div class="px-2 py-1 rounded hover:bg-gray-800 flex items-center gap-2"><i class="fa-solid fa-wrench text-[10px]"></i> Pengaduan</div>
+            <div class="px-2 py-1 rounded hover:bg-gray-800 flex items-center gap-2"><i class="fa-solid fa-building text-[10px]"></i> Ruang & PIC</div>
+            <div class="px-2 py-1 rounded hover:bg-gray-800 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-[10px]"></i> Laporan Sarpras</div>
+            <div class="px-2 py-1 rounded border border-white font-bold flex items-center gap-2"><i class="fa-solid fa-users-gear text-[10px]"></i> Data Pengguna</div>
+          </div>
+
+          <!-- Content B&W -->
+          <div class="flex-1 space-y-3 text-xs">
+            <div class="flex justify-between items-center p-2.5 bg-white rounded-lg border border-black">
+              <div>
+                <strong class="block text-black">Kelola Pengguna & Hak Akses</strong>
+                <span class="text-[10px] text-midgray">Tambah guru, waka, organisasi, dan reset password</span>
+              </div>
+              <button class="px-2.5 py-1.5 bg-black text-white font-bold rounded-lg text-[11px]">+ Buat Akun</button>
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="p-2 rounded bg-white border border-gray-400 flex justify-between items-center">
+                <span><strong>waka</strong> (Drs. H. Mulyadi)</span>
+                <span class="badge-bw">Waka Sarpras</span>
+              </div>
+              <div class="p-2 rounded bg-white border border-gray-400 flex justify-between items-center">
+                <span><strong>guru1</strong> (Siti Aminah, M.Pd)</span>
+                <span class="badge-bw">Guru</span>
+              </div>
+              <div class="p-2 rounded bg-white border border-gray-400 flex justify-between items-center">
+                <span><strong>osis</strong> (Pengurus OSIS)</span>
+                <span class="badge-bw">Organisasi</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t-2 border-black flex justify-between items-center text-[11px] text-midgray">
+        <span>Fitur Kunci: <strong>CRUD User, Master Ruang, Reset Password Akun</strong></span>
+        <span class="font-bold text-black">Akses: Otoritas Penuh</span>
+      </div>
+    </div>
+
+    <!-- ── ROLE 2: WAKA SARPRAS ── -->
+    <div class="wireframe-box p-6 flex flex-col justify-between" data-role="waka">
+      <div>
+        <div class="flex items-center justify-between pb-3 mb-4 border-b-2 border-black">
+          <div class="flex items-center gap-2">
+            <span class="badge-bw solid">Role: Waka Sarpras</span>
+            <span class="text-xs font-bold">Otorisasi & Kebijakan Jadwal</span>
+          </div>
+          <span class="badge-bw">Persetujuan & Pindah Ruang</span>
+        </div>
+
+        <div class="space-y-3 text-xs mb-4">
+          <!-- Request Box -->
+          <div class="p-4 bg-white rounded-xl border border-black">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <span class="badge-bw">Menunggu Otorisasi</span>
+                <h4 class="font-black text-black text-sm mt-1.5">Latihan Gabungan Paskibra & Pramuka</h4>
+                <p class="text-[11px] text-midgray">Aula Utama · 04 Nov 2026 (Sesi 3-4)</p>
+              </div>
+              <span class="text-[10px] text-midgray">Oleh: pramuka</span>
+            </div>
+            <!-- B&W Buttons -->
+            <div class="flex gap-2 pt-2.5 border-t border-gray-300">
+              <button class="px-3 py-1.5 bg-black text-white font-bold rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-check"></i> ACC / Setujui</button>
+              <button class="px-3 py-1.5 bg-white text-black border-2 border-black font-bold rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-arrows-split-up-and-left"></i> Pindahkan Ruang</button>
+              <button class="px-3 py-1.5 bg-lightgray text-black border border-black font-bold rounded-lg">Tolak</button>
+            </div>
+          </div>
+
+          <!-- Moved Notice Box -->
+          <div class="p-3 bg-softbg rounded-xl border-2 border-black text-[11px]">
+            <strong class="flex items-center gap-1.5 font-bold mb-1 text-black">
+              <i class="fa-solid fa-bell"></i> Fitur Khusus Waka: Pemindahan Ruangan
+            </strong>
+            <p class="text-midgray">Jika ruangan mendesak dipakai kegiatan dinas/sekolah, Waka dapat memindahkan peminjam ke ruang lain dan sistem otomatis menerbitkan <strong>pop-up peringatan</strong> pada akun pemohon.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t-2 border-black flex justify-between items-center text-[11px] text-midgray">
+        <span>Fitur Kunci: <strong>ACC / Tolak Peminjaman, Pindah Ruang, Rekap Laporan</strong></span>
+        <span class="font-bold text-black">Akses: Otorisasi Sarpras</span>
+      </div>
+    </div>
+
+    <!-- ── ROLE 3: GURU ── -->
+    <div class="wireframe-box p-6 flex flex-col justify-between" data-role="guru">
+      <div>
+        <div class="flex items-center justify-between pb-3 mb-4 border-b-2 border-black">
+          <div class="flex items-center gap-2">
+            <span class="badge-bw solid">Role: Dewan Guru</span>
+            <span class="text-xs font-bold">Pengajuan Ruang & Aduan Kerusakan</span>
+          </div>
+          <span class="badge-bw">Pemohon & Pelapor</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mb-4">
+          <!-- Card 1 -->
+          <div class="bg-white p-4 rounded-xl border border-black flex flex-col justify-between">
+            <div>
+              <div class="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center font-bold mb-2">
+                <i class="fa-regular fa-calendar-plus"></i>
+              </div>
+              <strong class="block text-sm">Pinjam Ruang KBM</strong>
+              <p class="text-[11px] text-midgray mt-1">Mengajukan Lab Komputer atau Ruang Teori untuk pembelajaran (Minimal H-1).</p>
+            </div>
+            <button class="w-full mt-3 py-1.5 bg-black text-white rounded-lg font-bold">+ Ajukan Pinjam</button>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="bg-white p-4 rounded-xl border border-black flex flex-col justify-between">
+            <div>
+              <div class="w-8 h-8 rounded-lg border-2 border-black text-black flex items-center justify-center font-bold mb-2">
+                <i class="fa-solid fa-camera"></i>
+              </div>
+              <strong class="block text-sm">Lapor Sarpras Rusak</strong>
+              <p class="text-[11px] text-midgray mt-1">Lapor kerusakan AC, proyektor, atau sarpras dengan bukti foto kamera real-time.</p>
+            </div>
+            <button class="w-full mt-3 py-1.5 bg-white text-black border-2 border-black rounded-lg font-bold">+ Lapor Kerusakan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t-2 border-black flex justify-between items-center text-[11px] text-midgray">
+        <span>Fitur Kunci: <strong>Peminjaman Ruang, Aduan Foto Kamera, Riwayat Status</strong></span>
+        <span class="font-bold text-black">Akses: Tenaga Pendidik</span>
+      </div>
+    </div>
+
+    <!-- ── ROLE 4: ORGANISASI SISWA ── -->
+    <div class="wireframe-box p-6 flex flex-col justify-between" data-role="organisasi">
+      <div>
+        <div class="flex items-center justify-between pb-3 mb-4 border-b-2 border-black">
+          <div class="flex items-center gap-2">
+            <span class="badge-bw solid">Role: Organisasi Sekolah</span>
+            <span class="text-xs font-bold">OSIS / Pramuka / Ekskul</span>
+          </div>
+          <span class="badge-bw">Hak Akses Mirip Guru</span>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-black text-xs space-y-3 mb-4">
+          <div class="flex items-center gap-3 p-2.5 bg-softbg rounded-lg border border-black">
+            <div class="w-9 h-9 rounded-lg bg-black text-white flex items-center justify-center font-black">
+              <i class="fa-solid fa-flag"></i>
+            </div>
+            <div>
+              <strong class="block">Akun Resmi Organisasi (osis / pramuka)</strong>
+              <span class="text-[10px] text-midgray">Meminjam Aula, Lapangan, dan Fasilitas demi kegiatan kesiswaan.</span>
+            </div>
+          </div>
+
+          <div class="p-3 bg-white rounded-lg border border-gray-400 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold">Status Pengajuan Kegiatan:</span>
+              <span class="badge-bw solid">Disetujui Waka</span>
+            </div>
+            <p class="text-[11px] text-midgray">Rapat Dies Natalis Sekolah · Aula Utama (13:00 - 15:00)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t-2 border-black flex justify-between items-center text-[11px] text-midgray">
+        <span>Fitur Kunci: <strong>Pinjam Ruang Kesiswaan, Pengaduan, Notifikasi Pemindahan</strong></span>
+        <span class="font-bold text-black">Akses: Organisasi Siswa</span>
+      </div>
+    </div>
+
+    <!-- ── ROLE 5: SISWA / TAMU (PUBLIK) ── -->
+    <div class="wireframe-box p-6 flex flex-col justify-between" data-role="siswa">
+      <div>
+        <div class="flex items-center justify-between pb-3 mb-4 border-b-2 border-black">
+          <div class="flex items-center gap-2">
+            <span class="badge-bw solid">Role: Siswa / Tamu</span>
+            <span class="text-xs font-bold">Transparansi Kalender (Read-Only)</span>
+          </div>
+          <span class="badge-bw">Tanpa Perlu Login</span>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-black text-xs space-y-3 mb-4">
+          <div class="flex items-center justify-between p-2.5 bg-softbg rounded-lg border border-black">
+            <div>
+              <strong class="block">Jadwal Kalender Terbuka</strong>
+              <span class="text-[10px] text-midgray">Siswa dapat melihat lab mana yang sedang kosong atau terpakai.</span>
+            </div>
+            <a href="#" class="px-3 py-1.5 bg-black text-white font-bold rounded-lg text-[11px]">Masuk Akun &rarr;</a>
+          </div>
+
+          <div class="p-2.5 rounded-lg border border-gray-400 flex justify-between items-center">
+            <div>
+              <strong>Lab Komputer 1</strong>
+              <p class="text-[10px] text-midgray">Praktikum Pemrograman Web XII RPL</p>
+            </div>
+            <span class="badge-bw solid">Terpakai</span>
+          </div>
+
+          <div class="p-2.5 rounded-lg border border-gray-400 flex justify-between items-center">
+            <div>
+              <strong>Lab Komputer 2</strong>
+              <p class="text-[10px] text-midgray">Tersedia untuk belajar mandiri / ekskul</p>
+            </div>
+            <span class="badge-bw">Kosong / Tersedia</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t-2 border-black flex justify-between items-center text-[11px] text-midgray">
+        <span>Fitur Kunci: <strong>Lihat Kalender Ruang, Informasi Sarpras, Cek Ruang Kosong</strong></span>
+        <span class="font-bold text-black">Akses: Publik (Read Only)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function filterRole(role) {
+      const cards = document.querySelectorAll('.wireframe-box');
+      cards.forEach(c => {
+        if (role === 'all' || c.dataset.role === role) {
+          c.style.display = 'flex';
+        } else {
+          c.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

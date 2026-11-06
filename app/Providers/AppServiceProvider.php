@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,14 +21,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (config('app.env') === 'production' || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
+            URL::forceScheme('https');
         }
 
         // Vercel Serverless SQLite & Storage Handler (Writable in /tmp)
         if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL'])) {
             $tmpDb = '/tmp/database.sqlite';
             $srcDb = database_path('database.sqlite');
-            if (!file_exists($tmpDb)) {
+            if (! file_exists($tmpDb)) {
                 if (file_exists($srcDb)) {
                     copy($srcDb, $tmpDb);
                 } else {
@@ -37,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
             config(['database.connections.sqlite.database' => $tmpDb]);
 
             $tmpStorage = '/tmp/storage';
-            if (!is_dir($tmpStorage)) {
+            if (! is_dir($tmpStorage)) {
                 @mkdir($tmpStorage, 0777, true);
             }
             config(['filesystems.disks.public.root' => $tmpStorage]);

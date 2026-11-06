@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamp('updated_at')->nullable();
         });
     }
+
     public function down(): void
     {
         Schema::dropIfExists('complaints');

@@ -28,16 +28,37 @@
     </label>
 
     {{-- Tanggal: minimal besok --}}
-    <label>Tanggal kegiatan
-      <input type="date" name="date" id="date"
-        min="{{ $minDate }}"
-        required
-        value="{{ old('date') }}">
-      <small class="muted">Pengajuan minimal 1 hari sebelum kegiatan (H-1). Peminjaman tidak tersedia pada hari Sabtu dan Minggu.</small>
+    <div style="margin-bottom:1.25rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem">
+        <label for="date" style="margin:0;font-weight:700">Tanggal Kegiatan</label>
+        <label style="display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.82rem;color:var(--accent);font-weight:600;margin:0">
+          <input type="checkbox" id="toggleMultiDay" style="width:16px;height:16px;accent-color:var(--accent)">
+          Peminjaman Lebih dari 1 Hari (Multi-Hari)
+        </label>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr;gap:.75rem" id="datesContainer">
+        <div>
+          <span style="font-size:.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.25rem" id="startDateLabel">Tanggal Kegiatan (Mulai)</span>
+          <input type="date" name="date" id="date"
+            min="{{ $minDate }}"
+            required
+            value="{{ old('date') }}">
+        </div>
+
+        <div id="endDateBox" style="display:none">
+          <span style="font-size:.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:.25rem">Tanggal Selesai (Hingga)</span>
+          <input type="date" name="end_date" id="endDate"
+            min="{{ $minDate }}"
+            value="{{ old('end_date') }}">
+        </div>
+      </div>
+
+      <small class="muted" style="display:block;margin-top:.35rem">Pengajuan minimal 1 hari sebelum kegiatan (H-1). Hari Sabtu &amp; Minggu dilewati otomatis.</small>
       <div id="weekendWarning" style="display:none;margin-top:.4rem;padding:.5rem .75rem;background:#fee2e2;border:1px solid #f87171;color:#b91c1c;border-radius:var(--radius-sm);font-size:.82rem;font-weight:600">
         Hari Sabtu dan Minggu tidak dapat dipilih untuk peminjaman ruangan. Silakan pilih hari Senin s.d. Jumat.
       </div>
-    </label>
+    </div>
 
     {{-- Sesi --}}
     <div id="sessionBox">
@@ -163,9 +184,9 @@ function loadSlots() {
   fetch(`{{ route('events.slots') }}?room_id=${room}&date=${date}`)
     .then(r => r.json())
     .then(data => {
-      if (data.weekend || data.error) {
+      if (data.weekend || data.holiday || data.error) {
         slotBox.hidden = false;
-        slotBox.innerHTML = `<p style="margin:0;color:var(--bad);font-weight:600">${data.error || 'Peminjaman ruangan tidak tersedia pada akhir pekan.'}</p>`;
+        slotBox.innerHTML = `<p style="margin:0;color:var(--bad);font-weight:600">${data.error || 'Peminjaman ruangan tidak tersedia pada tanggal ini.'}</p>`;
         return;
       }
       if (!data.sessions) return;
@@ -183,9 +204,42 @@ function loadSlots() {
     .catch(() => {});
 }
 
+const toggleMultiDay = document.getElementById('toggleMultiDay');
+const endDateBox     = document.getElementById('endDateBox');
+const endDateEl      = document.getElementById('endDate');
+const datesContainer = document.getElementById('datesContainer');
+
+function updateMultiDayState() {
+  if (toggleMultiDay && endDateBox) {
+    if (toggleMultiDay.checked) {
+      endDateBox.style.display = 'block';
+      endDateEl.required = true;
+      if (datesContainer) datesContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(220px, 1fr))';
+      if (dateEl.value) endDateEl.min = dateEl.value;
+    } else {
+      endDateBox.style.display = 'none';
+      endDateEl.required = false;
+      endDateEl.value = '';
+      if (datesContainer) datesContainer.style.gridTemplateColumns = '1fr';
+    }
+  }
+}
+
+toggleMultiDay?.addEventListener('change', updateMultiDayState);
+if (endDateEl?.value) {
+  if (toggleMultiDay) toggleMultiDay.checked = true;
+  updateMultiDayState();
+}
+
 roomEl.addEventListener('change', loadSlots);
 dateEl.addEventListener('change', () => {
   checkWeekend();
+  if (endDateEl && dateEl.value) {
+    endDateEl.min = dateEl.value;
+    if (endDateEl.value && endDateEl.value < dateEl.value) {
+      endDateEl.value = dateEl.value;
+    }
+  }
   loadSlots();
 });
 dateEl.addEventListener('input', checkWeekend);

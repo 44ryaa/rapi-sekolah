@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     protected $fillable = [
         'username', 'email', 'password', 'fullname', 'phone_number', 'photo', 'role_id',
@@ -29,22 +30,27 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return (int)$this->role_id === Role::ADMIN;
+        return (int) $this->role_id === Role::ADMIN;
     }
 
     public function isPic(): bool
     {
-        return (int)$this->role_id === Role::PIC;
+        return (int) $this->role_id === Role::PIC;
     }
 
     public function isGuru(): bool
     {
-        return (int)$this->role_id === Role::GURU;
+        return (int) $this->role_id === Role::GURU || (int) $this->role_id === Role::ORGANISASI;
+    }
+
+    public function isOrganisasi(): bool
+    {
+        return (int) $this->role_id === Role::ORGANISASI;
     }
 
     public function isWaka(): bool
     {
-        return (int)$this->role_id === Role::WAKA;
+        return (int) $this->role_id === Role::WAKA;
     }
 
     public function canApprove(): bool
@@ -54,7 +60,7 @@ class User extends Authenticatable
 
     public function rooms()
     {
-        return $this->hasMany(\App\Models\Room::class, 'pic_id');
+        return $this->hasMany(Room::class, 'pic_id');
     }
 
     public function notifications()

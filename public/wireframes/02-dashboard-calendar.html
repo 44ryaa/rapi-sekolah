@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRS UI · 02 Dashboard & Kalender Sarpras (Tampilan Asli)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { height: 100vh; max-height: 100vh; overflow: hidden; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #e8e2d5; }
+    .canvas-card { background: #f7f4ee; border: 1.5px solid #ded6c8; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+    .card-real { background: #ffffff; border: 1px solid #e5ded2; border-radius: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+  </style>
+</head>
+<body class="p-3 flex flex-col justify-between box-border text-[#231b14]">
+
+  <div class="h-full flex gap-3.5">
+
+    <!-- ── SIDEBAR ASLI ESPRESSO ── -->
+    <aside class="w-60 bg-[#15110e] text-[#d5cdc2] p-4 rounded-2xl flex flex-col justify-between flex-shrink-0 shadow-xl border border-white/10">
+      <div class="space-y-3">
+        <!-- Brand Squircle -->
+        <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+          <div class="w-9 h-9 rounded-xl bg-[#dfd9ce] flex items-center justify-center text-[#15110e] text-base font-bold shadow-md">
+            <i class="fa-solid fa-shapes"></i>
+          </div>
+          <div>
+            <h2 class="font-extrabold text-sm text-white leading-tight">RAPI-Sekolah</h2>
+            <span class="text-[10px] text-[#8e8477] font-semibold block">Sistem Sarpras Terpadu</span>
+          </div>
+        </div>
+
+        <!-- Links Asli -->
+        <nav class="space-y-0.5 text-xs font-semibold">
+          <span class="text-[8px] uppercase tracking-wider text-[#73695c] font-bold block px-2 mb-0.5">Menu Utama</span>
+          <a href="02-dashboard-calendar.html" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-[#dfd9ce] text-[#15110e] font-bold shadow-sm">
+            <i class="fa-regular fa-calendar w-3.5"></i> Kalender Ruang
+          </a>
+          <a href="03-booking-event.html" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-white/5 hover:text-white transition">
+            <i class="fa-solid fa-table-cells w-3.5"></i> Agenda Ruang
+          </a>
+          <a href="04-complaint-camera.html" class="flex items-center justify-between px-3 py-1.5 rounded-xl hover:bg-white/5 hover:text-white transition">
+            <div class="flex items-center gap-2.5"><i class="fa-solid fa-wrench w-3.5"></i> Pengaduan</div>
+            <span class="px-1.5 py-0.2 bg-red-500 text-white rounded-full text-[8px] font-bold">2</span>
+          </a>
+
+          <span class="text-[8px] uppercase tracking-wider text-[#73695c] font-bold block px-2 pt-2 mb-0.5">Manajemen</span>
+          <a href="05-room-management.html" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-white/5 hover:text-white transition">
+            <i class="fa-solid fa-building w-3.5"></i> Ruang & PIC
+          </a>
+          <a href="06-reports-export.html" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-white/5 hover:text-white transition">
+            <i class="fa-solid fa-chart-pie w-3.5"></i> Laporan Sarpras
+          </a>
+          <a href="07-user-management.html" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-white/5 hover:text-white transition">
+            <i class="fa-solid fa-users-gear w-3.5"></i> Data Pengguna
+          </a>
+          <a href="08-profile.html" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-white/5 hover:text-white transition">
+            <i class="fa-regular fa-user w-3.5"></i> Profil Saya
+          </a>
+        </nav>
+      </div>
+
+      <!-- User Chip Asli -->
+      <div class="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-[#251e18] text-[#dfd9ce] font-extrabold flex items-center justify-center text-xs border border-white/10">A</div>
+          <div>
+            <strong class="block text-[11px] text-white">Admin Sarpras</strong>
+            <span class="text-[9px] text-[#8e8477]">Administrator</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── CANVAS UTAMA REAL UI ── -->
+    <main class="flex-1 canvas-card p-4 flex flex-col justify-between gap-3 min-w-0">
+
+      <!-- Header Canvas -->
+      <header class="flex justify-between items-center pb-2.5 border-b border-[#e5ded2]">
+        <div>
+          <h2 class="text-base font-extrabold text-[#15110e]">Kalender Sarpras</h2>
+          <p class="text-[11px] text-[#7d7367]">Pantau ketersediaan lab, aula, dan kelas secara real-time</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-[10px] text-[#9c9183]"></i>
+            <input type="text" placeholder="Cari ruang..." class="pl-7 pr-3 py-1 text-xs bg-white border border-[#ddd5c7] rounded-full w-40">
+          </div>
+          <button class="w-7 h-7 rounded-full bg-white border border-[#ddd5c7] flex items-center justify-center text-xs text-[#15110e] shadow-sm">
+            <i class="fa-regular fa-moon"></i>
+          </button>
+          <button class="w-7 h-7 rounded-full bg-white border border-[#ddd5c7] flex items-center justify-center text-xs text-[#15110e] shadow-sm relative">
+            <i class="fa-regular fa-bell"></i>
+            <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Stats Cards Row (Real UI Colors) -->
+      <section class="grid grid-cols-4 gap-3 text-xs">
+        <div class="card-real p-3 flex items-center justify-between border-l-4 border-l-emerald-500">
+          <div>
+            <span class="text-[#8c8275] block text-[10px] font-bold">Ruang Tersedia</span>
+            <strong class="text-xl font-extrabold text-[#15110e]">18 <span class="text-[10px] font-normal text-[#8c8275]">/ 24</span></strong>
+          </div>
+          <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-door-open text-xs"></i>
+          </div>
+        </div>
+
+        <div class="card-real p-3 flex items-center justify-between border-l-4 border-l-amber-500">
+          <div>
+            <span class="text-[#8c8275] block text-[10px] font-bold">Peminjaman Hari Ini</span>
+            <strong class="text-xl font-extrabold text-[#15110e]">6 Sesi</strong>
+          </div>
+          <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <i class="fa-regular fa-clock text-xs"></i>
+          </div>
+        </div>
+
+        <div class="card-real p-3 flex items-center justify-between border-l-4 border-l-purple-500">
+          <div>
+            <span class="text-[#8c8275] block text-[10px] font-bold">Pengaduan Aktif</span>
+            <strong class="text-xl font-extrabold text-[#15110e]">3 Aduan</strong>
+          </div>
+          <div class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+          </div>
+        </div>
+
+        <div class="card-real p-3 flex items-center justify-between border-l-4 border-l-blue-500">
+          <div>
+            <span class="text-[#8c8275] block text-[10px] font-bold">Otorisasi Waka</span>
+            <strong class="text-xl font-extrabold text-[#15110e]">2 Pending</strong>
+          </div>
+          <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-shield-halved text-xs"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- Split Calendar Grid & Agenda -->
+      <section class="flex-1 grid grid-cols-12 gap-3.5 min-h-0">
+        <!-- Monthly Matrix (7 cols) -->
+        <div class="col-span-7 card-real p-3.5 flex flex-col justify-between">
+          <div class="flex justify-between items-center pb-1.5 border-b border-[#e5ded2]">
+            <div class="flex items-center gap-2">
+              <strong class="text-sm font-extrabold text-[#15110e]">November 2026</strong>
+              <span class="text-[9px] px-2 py-0.5 rounded-full bg-[#eae4d9] font-bold text-[#15110e]">Bulan Ini</span>
+            </div>
+            <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[9px] font-bold rounded-md">Hari Ini: 3 Nov</span>
+          </div>
+
+          <div class="grid grid-cols-7 gap-1.5 text-center text-[10px] my-auto">
+            <span class="font-bold text-[#8c8275] py-0.5">Sen</span><span class="font-bold text-[#8c8275] py-0.5">Sel</span><span class="font-bold text-[#8c8275] py-0.5">Rab</span><span class="font-bold text-[#8c8275] py-0.5">Kam</span><span class="font-bold text-[#8c8275] py-0.5">Jum</span><span class="font-bold text-[#8c8275] py-0.5">Sab</span><span class="font-bold text-red-500 py-0.5">Min</span>
+            
+            <div class="p-1 border border-gray-100 rounded-lg text-gray-400 bg-gray-50/50">27</div>
+            <div class="p-1 border border-gray-100 rounded-lg text-gray-400 bg-gray-50/50">28</div>
+            <div class="p-1 border border-gray-100 rounded-lg text-gray-400 bg-gray-50/50">29</div>
+            <div class="p-1 border border-gray-100 rounded-lg text-gray-400 bg-gray-50/50">30</div>
+            
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>1</span><span class="text-[8px] bg-emerald-100 text-emerald-800 font-bold rounded px-1">Terisi</span>
+            </div>
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>2</span><span class="text-[8px] bg-purple-100 text-purple-800 font-bold rounded px-1">Terisi</span>
+            </div>
+            <div class="p-1 border-2 border-[#c87d32] bg-amber-50/70 rounded-lg flex flex-col justify-between font-extrabold h-12 text-[#c87d32] shadow-sm">
+              <span>3 •</span><span class="text-[8px] bg-[#c87d32] text-white font-bold rounded px-1">6 Sesi</span>
+            </div>
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>4</span>
+            </div>
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>5</span>
+            </div>
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>6</span>
+            </div>
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>7</span>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center text-[10px] text-[#7d7367] pt-1.5 border-t border-[#e5ded2]">
+            <span>Matriks peminjaman ruang terintegrasi API otomatis</span>
+            <span class="font-bold text-[#15110e]">SRS Mockup UI</span>
+          </div>
+        </div>
+
+        <!-- Right Agenda List (5 cols) -->
+        <div class="col-span-5 card-real p-3.5 flex flex-col justify-between">
+          <div>
+            <h3 class="font-extrabold text-xs text-[#15110e] pb-1.5 border-b border-[#e5ded2] mb-2">Agenda Ruang Hari Ini</h3>
+            <div class="space-y-1.5 text-xs">
+              <div class="p-2.5 rounded-xl bg-[#faf7f2] border-l-4 border-emerald-500 space-y-0.5">
+                <span class="font-extrabold text-[11px] text-[#15110e] block">Lab Komputer 1</span>
+                <p class="text-[#7d7367] text-[10px]">Praktikum RPL Kelas XII (07:00 - 09:30)</p>
+                <span class="inline-block px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[8px] font-bold">ACC Waka</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-[#faf7f2] border-l-4 border-amber-500 space-y-0.5">
+                <span class="font-extrabold text-[11px] text-[#15110e] block">Aula Utama Pertemuan</span>
+                <p class="text-[#7d7367] text-[10px]">Rapat Koordinasi OSIS (13:00 - 15:00)</p>
+                <span class="inline-block px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded text-[8px] font-bold">ACC Waka</span>
+              </div>
+            </div>
+          </div>
+
+          <a href="03-booking-event.html" class="w-full py-2 bg-[#15110e] text-white text-center rounded-xl font-bold text-xs hover:bg-[#251e18] transition shadow">
+            + Ajukan Peminjaman Ruang
+          </a>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

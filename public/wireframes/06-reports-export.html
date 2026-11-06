@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRS UI · 06 Laporan Sarpras & Cetak Kop</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { height: 100vh; max-height: 100vh; overflow: hidden; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #e8e2d5; }
+    .card-real { background: #ffffff; border: 1.5px solid #ded6c8; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
+  </style>
+</head>
+<body class="p-4 flex items-center justify-center h-screen box-border text-[#231b14]">
+
+  <div class="max-w-4xl w-full card-real p-6 space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-[#e5ded2] text-xs">
+      <a href="02-dashboard-calendar.html" class="font-bold flex items-center gap-1.5 text-[#15110e] hover:text-[#c87d32]"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
+      <span class="font-black text-sm text-[#15110e]">Laporan & Rekap Statistik</span>
+      <span class="px-2.5 py-0.5 bg-blue-100 text-blue-900 rounded-full text-[10px] font-bold">Admin & Waka</span>
+    </div>
+
+    <div class="flex justify-between items-center pb-2">
+      <div>
+        <h2 class="text-base font-extrabold text-[#15110e]">Rekapitulasi Peminjaman & Pengaduan</h2>
+        <p class="text-[11px] text-[#7d7367]">Laporan berkala penggunaan fasilitas sekolah dan penyelesaian kendala sarpras.</p>
+      </div>
+      <div class="flex items-center gap-2 text-xs">
+        <button class="px-3 py-1.5 border border-[#ddd5c7] bg-white rounded-xl font-bold flex items-center gap-1.5 hover:bg-gray-50 shadow-sm text-emerald-800">
+          <i class="fa-solid fa-file-csv"></i> Unduh CSV
+        </button>
+        <button class="px-3.5 py-1.5 bg-[#15110e] text-white rounded-xl font-bold flex items-center gap-1.5 hover:bg-[#251e18] shadow">
+          <i class="fa-solid fa-print"></i> Cetak Kop Resmi
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="p-3 bg-[#faf7f2] border border-[#e5ded2] rounded-xl flex items-center justify-between gap-3 text-xs font-bold">
+      <div class="flex items-center gap-2 text-[#5c5347]">
+        <span>Periode:</span>
+        <input type="date" value="2026-11-01" class="px-2 py-1 border border-[#ddd5c7] rounded-lg bg-white text-[11px] font-medium">
+        <span>s/d</span>
+        <input type="date" value="2026-11-30" class="px-2 py-1 border border-[#ddd5c7] rounded-lg bg-white text-[11px] font-medium">
+      </div>
+      <button class="px-3 py-1 bg-[#c87d32] text-white rounded-lg font-bold text-xs hover:bg-[#b06a28]">Terapkan Filter</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-3 text-xs">
+      <div class="p-3 border border-[#e5ded2] rounded-xl bg-purple-50/50">
+        <span class="text-purple-900 block text-[10px] font-bold mb-0.5">Total Peminjaman Disetujui</span>
+        <strong class="text-xl font-black text-purple-950 block">48 Kegiatan</strong>
+      </div>
+      <div class="p-3 border border-[#e5ded2] rounded-xl bg-emerald-50/50">
+        <span class="text-emerald-900 block text-[10px] font-bold mb-0.5">Pengaduan Selesai</span>
+        <strong class="text-xl font-black text-emerald-950 block">22 Laporan</strong>
+      </div>
+      <div class="p-3 border border-[#e5ded2] rounded-xl bg-amber-50/50">
+        <span class="text-amber-900 block text-[10px] font-bold mb-0.5">Tingkat Penyelesaian</span>
+        <strong class="text-xl font-black text-amber-950 block">95.4%</strong>
+      </div>
+    </div>
+
+    <!-- Mockup Kop Surat -->
+    <div class="p-3.5 border border-dashed border-[#d1c7b8] rounded-xl space-y-1 bg-[#faf8f4] text-center">
+      <h4 class="font-black text-xs uppercase text-[#15110e]">DINAS PENDIDIKAN · SMK NEGERI INDONESIA</h4>
+      <p class="text-[10px] text-[#7d7367]">Format Dokumen PDF Resmi Laporan Sarana & Prasarana Sekolah</p>
+    </div>
+  </div>
+
+</body>
+</html>

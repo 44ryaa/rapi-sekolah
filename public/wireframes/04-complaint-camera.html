@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRS UI · 04 Pengaduan Sarpras & Kamera Real-Time</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { height: 100vh; max-height: 100vh; overflow: hidden; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #e8e2d5; }
+    .card-real { background: #ffffff; border: 1.5px solid #ded6c8; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
+  </style>
+</head>
+<body class="p-4 flex items-center justify-center h-screen box-border text-[#231b14]">
+
+  <div class="max-w-3xl w-full card-real p-6 space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-[#e5ded2] text-xs">
+      <a href="02-dashboard-calendar.html" class="font-bold flex items-center gap-1.5 text-[#15110e] hover:text-[#c87d32]"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
+      <span class="font-black text-sm text-[#15110e]">Formulir Laporan Kerusakan</span>
+      <span class="px-2.5 py-0.5 bg-red-100 text-red-800 rounded-full text-[10px] font-bold">Kamera Real-time</span>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-3 text-xs">
+        <h2 class="text-sm font-extrabold text-[#15110e]">Informasi Kerusakan</h2>
+        <div>
+          <label class="block font-bold text-[#5c5347] mb-1">Lokasi Ruangan</label>
+          <select class="w-full px-3 py-2 border border-[#ddd5c7] rounded-xl bg-[#faf8f4] font-semibold text-[#15110e]">
+            <option>Lab Komputer 1</option>
+            <option>Aula Utama</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-[#5c5347] mb-1">Nama Barang / Fasilitas</label>
+          <input type="text" value="Proyektor LCD Epson" class="w-full px-3 py-2 border border-[#ddd5c7] rounded-xl bg-[#faf8f4] font-semibold text-[#15110e]">
+        </div>
+        <div>
+          <label class="block font-bold text-[#5c5347] mb-1">Deskripsi Kerusakan</label>
+          <textarea rows="2" class="w-full px-3 py-2 border border-[#ddd5c7] rounded-xl bg-white">Lampu indikator berkedip merah dan tidak memancarkan layar.</textarea>
+        </div>
+      </div>
+
+      <div class="flex flex-col justify-between space-y-3 text-xs">
+        <div>
+          <h2 class="text-sm font-extrabold text-[#15110e] mb-2">Bukti Foto Kamera</h2>
+          <div class="border-2 border-dashed border-[#c87d32]/60 rounded-xl p-4 text-center bg-[#faf7f2] space-y-1 cursor-pointer hover:bg-amber-50/50 transition">
+            <div class="w-10 h-10 rounded-full bg-amber-100 text-[#c87d32] flex items-center justify-center mx-auto text-base font-bold shadow-sm">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <strong class="block text-xs text-[#15110e]">Buka Kamera Ponsel / Laptop</strong>
+            <span class="text-[9px] text-[#8e8477] block">Ambil foto kerusakan secara langsung</span>
+          </div>
+          <div class="mt-2.5 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-between text-[11px]">
+            <span class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> foto_bukti_lcd.jpg (1.4 MB)</span>
+            <span class="text-[9px] font-bold">Siap Kirim</span>
+          </div>
+        </div>
+
+        <button type="button" class="w-full py-2.5 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition shadow">
+          Kirimkan Laporan Pengaduan
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

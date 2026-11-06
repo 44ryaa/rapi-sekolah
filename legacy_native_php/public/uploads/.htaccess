@@ -1,0 +1,5 @@
+# Unggahan hanya boleh berupa gambar; blokir eksekusi skrip.
+<FilesMatch "\.(php|phtml|phar|html?|js)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes

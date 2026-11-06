@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRS UI · Agenda & Kalender Publik (Tampilan Asli)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { height: 100vh; max-height: 100vh; overflow: hidden; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #e8e2d5; }
+    .canvas-card { background: #f7f4ee; border: 1.5px solid #ded6c8; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+    .card-real { background: #ffffff; border: 1px solid #e5ded2; border-radius: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+  </style>
+</head>
+<body class="p-3 flex flex-col justify-between box-border text-[#231b14]">
+
+  <div class="h-full flex gap-3.5">
+
+    <!-- ── SIDEBAR ASLI ESPRESSO (NO SCROLL) ── -->
+    <aside class="w-60 bg-[#15110e] text-[#d5cdc2] p-4 rounded-2xl flex flex-col justify-between flex-shrink-0 shadow-xl border border-white/10">
+      <div class="space-y-4">
+        <!-- Brand Squircle Asli -->
+        <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+          <div class="w-9 h-9 rounded-xl bg-[#dfd9ce] flex items-center justify-center text-[#15110e] text-base font-bold shadow-md">
+            <i class="fa-solid fa-shapes"></i>
+          </div>
+          <div>
+            <h2 class="font-extrabold text-sm text-white leading-tight">RAPI-Sekolah</h2>
+            <span class="text-[10px] text-[#8e8477] font-semibold block">Agenda Sarpras Publik</span>
+          </div>
+        </div>
+
+        <!-- Nav Links Publik -->
+        <nav class="space-y-1 text-xs font-semibold">
+          <span class="text-[9px] uppercase tracking-wider text-[#73695c] font-bold block px-2 mb-1">Menu Utama</span>
+          <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#dfd9ce] text-[#15110e] font-bold shadow-sm">
+            <i class="fa-regular fa-calendar w-4 text-center"></i>
+            <span>Agenda & Kalender</span>
+          </a>
+          <a href="#" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-white/5 hover:text-white transition">
+            <i class="fa-solid fa-door-open w-4 text-center"></i>
+            <span>Cek Ruang Kosong</span>
+          </a>
+          <a href="#" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-white/5 hover:text-white transition">
+            <i class="fa-solid fa-clock-rotate-left w-4 text-center"></i>
+            <span>Jadwal Sesi Hari Ini</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Login CTA Card -->
+      <div class="p-3 bg-white/5 rounded-xl border border-white/10 space-y-2 text-center text-xs">
+        <span class="text-[10px] text-[#8e8477] block font-medium">Bagi Guru & Staf Sekolah:</span>
+        <a href="01-login-otp.html" class="block w-full py-1.5 bg-[#dfd9ce] text-[#15110e] rounded-lg font-bold text-xs hover:bg-white transition shadow">
+          Masuk ke Akun &rarr;
+        </a>
+      </div>
+    </aside>
+
+    <!-- ── CANVAS UTAMA BERWARNA (FIT 100VH) ── -->
+    <main class="flex-1 canvas-card p-4 flex flex-col justify-between gap-3 min-w-0">
+
+      <!-- Header Topbar Real -->
+      <header class="flex justify-between items-center pb-2.5 border-b border-[#e5ded2]">
+        <div>
+          <h1 class="text-base font-extrabold text-[#15110e]">Kalender Sarpras & Agenda Publik</h1>
+          <p class="text-[11px] text-[#7d7367]">Pantau ketersediaan lab, aula, dan ruang kelas secara terbuka</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-[10px] text-[#9c9183]"></i>
+            <input type="text" placeholder="Cari ruang / kegiatan..." class="pl-7 pr-3 py-1 text-xs bg-white border border-[#ddd5c7] rounded-full w-44">
+          </div>
+          <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">Akses Terbuka</span>
+          <a href="01-login-otp.html" class="px-3 py-1 bg-[#15110e] text-white rounded-lg text-xs font-bold hover:bg-[#231c17]">Masuk</a>
+        </div>
+      </header>
+
+      <!-- Stats Cards Row (Real UI Colors) -->
+      <section class="grid grid-cols-4 gap-3 text-xs">
+        <div class="card-real p-3 flex items-center justify-between border-l-4 border-l-emerald-500">
+          <div>
+            <span class="text-[10px] text-[#8c8275] block font-semibold">Ruangan Tersedia</span>
+            <strong class="text-xl font-extrabold text-[#15110e]">18 Ruang</strong>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-door-open"></i>
+          </div>
+        </div>
+
+        <div class="card-real p-3 flex items-center justify-between border-l-4 border-l-amber-500">
+          <div>
+            <span class="text-[10px] text-[#8c8275] block font-semibold">Sedang Dipakai</span>
+            <strong class="text-xl font-extrabold text-[#15110e]">6 Ruang</strong>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-people-roof"></i>
+          </div>
+        </div>
+
+        <div class="card-real p-3 flex items-center justify-between border-l-4 border-l-purple-500">
+          <div>
+            <span class="text-[10px] text-[#8c8275] block font-semibold">Sesi Berlangsung</span>
+            <strong class="text-xl font-extrabold text-[#15110e]">Sesi 2 (08:15)</strong>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+            <i class="fa-regular fa-clock"></i>
+          </div>
+        </div>
+
+        <div class="card-real p-3 flex items-center justify-between border-l-4 border-l-blue-500">
+          <div>
+            <span class="text-[10px] text-[#8c8275] block font-semibold">Fasilitas Utama</span>
+            <strong class="text-xl font-extrabold text-[#15110e]">Lab & Aula</strong>
+          </div>
+          <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-building"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- Split Layout: Kalender Matrix + Agenda Hari Ini -->
+      <section class="flex-1 grid grid-cols-12 gap-3.5 min-h-0">
+
+        <!-- Kalender Bulanan Asli (7 cols) -->
+        <div class="col-span-7 card-real p-3.5 flex flex-col justify-between">
+          <div class="flex justify-between items-center pb-2 border-b border-[#e5ded2]">
+            <div class="flex items-center gap-2">
+              <strong class="text-sm font-extrabold text-[#15110e]">November 2026</strong>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#eae4d9] font-bold text-[#15110e]">Bulan Ini</span>
+            </div>
+            <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded-md">Hari Ini: 3 Nov</span>
+          </div>
+
+          <div class="grid grid-cols-7 gap-1.5 text-center text-[10px] my-auto">
+            <span class="font-bold text-[#8c8275] py-0.5">Sen</span><span class="font-bold text-[#8c8275] py-0.5">Sel</span><span class="font-bold text-[#8c8275] py-0.5">Rab</span><span class="font-bold text-[#8c8275] py-0.5">Kam</span><span class="font-bold text-[#8c8275] py-0.5">Jum</span><span class="font-bold text-[#8c8275] py-0.5">Sab</span><span class="font-bold text-red-500 py-0.5">Min</span>
+            
+            <div class="p-1 border border-gray-100 rounded-lg text-gray-400 bg-gray-50/50">27</div>
+            <div class="p-1 border border-gray-100 rounded-lg text-gray-400 bg-gray-50/50">28</div>
+            <div class="p-1 border border-gray-100 rounded-lg text-gray-400 bg-gray-50/50">29</div>
+            <div class="p-1 border border-gray-100 rounded-lg text-gray-400 bg-gray-50/50">30</div>
+            
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>1</span><span class="text-[8px] bg-emerald-100 text-emerald-800 font-bold rounded px-1">3 Sesi</span>
+            </div>
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>2</span><span class="text-[8px] bg-purple-100 text-purple-800 font-bold rounded px-1">2 Sesi</span>
+            </div>
+            <div class="p-1 border-2 border-[#c87d32] bg-amber-50/70 rounded-lg flex flex-col justify-between font-extrabold h-12 text-[#c87d32] shadow-sm">
+              <span>3 •</span><span class="text-[8px] bg-[#c87d32] text-white font-bold rounded px-1">6 Sesi</span>
+            </div>
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>4</span><span class="text-[8px] bg-blue-100 text-blue-800 font-bold rounded px-1">1 Sesi</span>
+            </div>
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>5</span><span class="text-[8px] text-gray-400">Kosong</span>
+            </div>
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>6</span><span class="text-[8px] text-gray-400">Kosong</span>
+            </div>
+            <div class="p-1 border border-[#e5ded2] bg-white rounded-lg flex flex-col justify-between font-bold h-12 shadow-sm">
+              <span>7</span><span class="text-[8px] text-gray-400">Kosong</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-[#e5ded2] text-[10px] text-[#7d7367]">
+            <span>Kotak bertanda titik emas menunjukkan tanggal aktif saat ini.</span>
+            <span class="font-bold text-[#15110e]">SRS UI: Antarmuka Publik</span>
+          </div>
+        </div>
+
+        <!-- Agenda Hari Ini (5 cols) -->
+        <div class="col-span-5 card-real p-3.5 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center pb-2 border-b border-[#e5ded2] mb-2">
+              <h3 class="font-extrabold text-xs text-[#15110e]">Jadwal Ruangan Hari Ini (3 Nov)</h3>
+              <span class="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold">Terverifikasi</span>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="p-2.5 rounded-xl bg-[#faf7f2] border-l-4 border-emerald-500 space-y-0.5">
+                <div class="flex justify-between items-center">
+                  <strong class="text-[11px] text-[#15110e]">Lab Komputer 1</strong>
+                  <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[9px] font-bold">Sesi 1-2</span>
+                </div>
+                <p class="text-[10px] text-[#7d7367]">Praktikum Pemrograman Web XII RPL 1 (07:00-09:30)</p>
+                <span class="text-[9px] text-[#8e8477] block">PIC: Budi Santoso, S.Kom</span>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-[#faf7f2] border-l-4 border-amber-500 space-y-0.5">
+                <div class="flex justify-between items-center">
+                  <strong class="text-[11px] text-[#15110e]">Aula Utama Pertemuan</strong>
+                  <span class="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded text-[9px] font-bold">Sesi 4-5</span>
+                </div>
+                <p class="text-[10px] text-[#7d7367]">Rapat Koordinasi Dies Natalis (13:00-15:00)</p>
+                <span class="text-[9px] text-[#8e8477] block">Peminjam: Pengurus OSIS</span>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-white border border-[#e5ded2] space-y-0.5">
+                <div class="flex justify-between items-center">
+                  <strong class="text-[11px] text-[#15110e]">Lab Komputer 2</strong>
+                  <span class="px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded text-[9px] font-bold">Kosong</span>
+                </div>
+                <p class="text-[10px] text-[#7d7367]">Tersedia untuk belajar mandiri / ekskul kesiswaan</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-2 bg-[#faf7f2] rounded-lg text-center text-[10px] text-[#7d7367] font-semibold border border-[#e5ded2]">
+            Data diperbarui secara otomatis dari sistem Sarpras RAPI-Sekolah.
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

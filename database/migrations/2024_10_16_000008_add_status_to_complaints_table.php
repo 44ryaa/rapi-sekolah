@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::table('complaints', function (Blueprint $table) {
             $table->enum('status', ['Diajukan', 'Diterima', 'Ditolak'])
-                  ->default('Diajukan')
-                  ->after('photo_path');
+                ->default('Diajukan')
+                ->after('photo_path');
             $table->text('reject_reason')->nullable()->after('status');
         });
     }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Complaint extends Model
 {
     const UPDATED_AT = 'updated_at';
+
     const CREATED_AT = 'reported_at';
 
     protected $fillable = [
