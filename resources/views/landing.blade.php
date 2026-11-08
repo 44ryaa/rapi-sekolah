@@ -11,8 +11,8 @@
   <script>
     (function() {
       const saved = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+      // Default to signature luxury dark theme unless explicitly set by user
+      document.documentElement.setAttribute('data-theme', saved || 'dark');
     })();
   </script>
   <style>
@@ -113,18 +113,48 @@
       font-weight: 800;
       font-size: 1.15rem;
       letter-spacing: -0.02em;
+      min-width: 0;
+      flex-shrink: 0;
     }
 
     .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: var(--brand-grad);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--brand-icon-color);
+      padding: 3px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--surface-border);
+      flex-shrink: 0;
+    }
+
+    .brand-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .brand-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      white-space: nowrap;
     }
 
     .nav-links {
@@ -471,11 +501,83 @@
       .nav-links {
         display: none;
       }
+      .nav-container {
+        padding: 0.65rem 0.85rem;
+        gap: 0.5rem;
+      }
+      .brand {
+        gap: 0.5rem;
+      }
+      .brand-icon {
+        width: 36px;
+        height: 36px;
+      }
+      .brand-title {
+        font-size: 1.05rem;
+        white-space: nowrap;
+      }
+      .brand-sub {
+        font-size: 0.68rem;
+        white-space: nowrap;
+      }
+      .nav-actions {
+        gap: 0.35rem;
+      }
+      .btn-nav-calendar {
+        display: none !important;
+      }
+      .btn-nav-login {
+        padding: 0.45rem 0.75rem;
+        font-size: 0.825rem;
+        white-space: nowrap;
+      }
+      .btn-nav-cta {
+        padding: 0.45rem 0.75rem;
+        font-size: 0.825rem;
+        white-space: nowrap;
+      }
       .hero {
-        padding: 3.5rem 1rem 2rem;
+        padding: 2.75rem 1rem 2rem;
+      }
+      .hero h1 {
+        font-size: 2.15rem;
+        line-height: 1.2;
+      }
+      .hero p {
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+      }
+      .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+        gap: 0.75rem;
+        margin-bottom: 3rem;
+      }
+      .hero-buttons .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        padding: 0 1rem;
+        margin-bottom: 3rem;
+      }
+      .metric-card {
+        padding: 1.25rem 0.75rem;
+      }
+      .metric-num {
+        font-size: 1.75rem;
+      }
+      .metric-label {
+        font-size: 0.75rem;
       }
       .cta-box {
         padding: 2.5rem 1.25rem;
+        margin: 2.5rem 1rem;
       }
     }
   </style>
@@ -486,12 +588,12 @@
   <header>
     <div class="nav-container">
       <a href="{{ url('/') }}" class="brand">
-        <div class="brand-icon" style="background:#fff;padding:2px;overflow:hidden;border-radius:10px;">
-          <img src="{{ asset('assets/img/logo-smk.png') }}" alt="Logo SMK N 1 Bantul" style="width:100%;height:100%;object-fit:contain;">
+        <div class="brand-icon">
+          <img src="{{ asset('assets/img/logo-smk.png') }}" alt="Logo SMK N 1 Bantul">
         </div>
-        <div style="display:flex;flex-direction:column;line-height:1.2;">
-          <span style="font-weight:800;font-size:1.15rem;letter-spacing:-0.02em;">RAPI-Sekolah</span>
-          <span style="font-size:0.75rem;color:var(--text-muted);font-weight:500;">SMK Negeri 1 Bantul</span>
+        <div class="brand-text">
+          <span class="brand-title">RAPI-Sekolah</span>
+          <span class="brand-sub">SMK Negeri 1 Bantul</span>
         </div>
       </a>
 
@@ -524,14 +626,14 @@
         </button>
 
         @auth
-          <a href="{{ route('calendar') }}" class="btn btn-primary">
-            Masuk Dashboard
+          <a href="{{ route('calendar') }}" class="btn btn-primary btn-nav-cta">
+            Dashboard
           </a>
         @else
-          <a href="{{ route('login') }}" class="btn btn-outline">
-            Masuk Akun
+          <a href="{{ route('login') }}" class="btn btn-outline btn-nav-login">
+            Masuk
           </a>
-          <a href="{{ route('calendar') }}" class="btn btn-primary">
+          <a href="{{ route('calendar') }}" class="btn btn-primary btn-nav-calendar">
             Cek Ruangan
           </a>
         @endauth
@@ -542,8 +644,8 @@
   <!-- Hero Section -->
   <section class="hero">
     <div class="badge-pill">
-      <img src="{{ asset('assets/img/logo-smk.png') }}" alt="Logo SMK" style="width:16px;height:16px;object-fit:contain;">
-      Sistem Sarpras Terpadu &middot; SMK Negeri 1 Bantul
+      <img src="{{ asset('assets/img/logo-smk.png') }}" alt="Logo SMK" style="width:20px;height:20px;object-fit:contain;flex-shrink:0;">
+      <span>Sistem Sarpras Terpadu &middot; SMK Negeri 1 Bantul</span>
     </div>
 
     <h1>Digitalisasi Pengelolaan Ruang &amp; Fasilitas Sekolah</h1>
@@ -760,12 +862,12 @@
     <div class="footer-container">
       <div class="footer-brand">
         <div class="brand" style="margin-bottom:0.5rem">
-          <div class="brand-icon" style="background:#fff;padding:2px;overflow:hidden;border-radius:10px;">
-            <img src="{{ asset('assets/img/logo-smk.png') }}" alt="Logo SMK N 1 Bantul" style="width:100%;height:100%;object-fit:contain;">
+          <div class="brand-icon">
+            <img src="{{ asset('assets/img/logo-smk.png') }}" alt="Logo SMK N 1 Bantul">
           </div>
-          <div style="display:flex;flex-direction:column;line-height:1.2;">
-            <span style="font-weight:800;">RAPI-Sekolah</span>
-            <span style="font-size:0.75rem;color:var(--text-muted);">SMK Negeri 1 Bantul</span>
+          <div class="brand-text">
+            <span class="brand-title">RAPI-Sekolah</span>
+            <span class="brand-sub">SMK Negeri 1 Bantul</span>
           </div>
         </div>
         <p>Sistem Pengelolaan Sarana dan Prasarana SMK Negeri 1 Bantul. Menunjang transparansi, ketertiban, dan pemanfaatan fasilitas pendidikan secara optimal.</p>
