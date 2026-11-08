@@ -40,8 +40,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         onDestinationSelected: (idx) {
           setState(() => _currentIndex = idx);
         },
-        backgroundColor: Colors.white,
-        indicatorColor: AppTheme.primaryLight,
+        backgroundColor: AppTheme.surface,
+        indicatorColor: AppTheme.bronzeLight,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),

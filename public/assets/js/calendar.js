@@ -1,7 +1,7 @@
 (function () {
-  const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-  const HARI = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-  const WARNA = ['#423223','#b8824f','#1f7a4a','#ba2c2c','#6b523e','#9c6a3b','#2c221a','#785536'];
+  const BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const WARNA = ['#423223', '#b8824f', '#1f7a4a', '#ba2c2c', '#6b523e', '#9c6a3b', '#2c221a', '#785536'];
   const pad = n => String(n).padStart(2, '0');
   const iso = (y, m, d) => `${y}-${pad(m + 1)}-${pad(d)}`;
   const el = (t, c, txt) => { const x = document.createElement(t); if (c) x.className = c; if (txt != null) x.textContent = txt; return x; };
@@ -79,7 +79,7 @@
     const [sy, sm, sd] = sel.split('-').map(Number), dt = new Date(sy, sm - 1, sd);
     const dayTitle = document.getElementById('dayTitle');
     if (dayTitle) dayTitle.textContent = `Agenda ${HARI[dt.getDay()]}, ${sd} ${BULAN[sm - 1]} ${sy}`;
-    const ul = document.getElementById('dayList'); 
+    const ul = document.getElementById('dayList');
     if (!ul) return;
     ul.replaceChildren();
 
@@ -102,10 +102,10 @@
     }
 
     const evs = byDate[sel] || [];
-    if (!evs.length) { 
-      ul.append(el('li', 'empty', holiday ? 'Sekolah libur, tidak ada kegiatan terjadwal.' : 'Tidak ada agenda pada tanggal ini.')); 
-      ul.lastChild.style.cssText = 'background:none;border:0'; 
-      return; 
+    if (!evs.length) {
+      ul.append(el('li', 'empty', holiday ? 'Sekolah libur, tidak ada kegiatan terjadwal.' : 'Tidak ada agenda pada tanggal ini.'));
+      ul.lastChild.style.cssText = 'background:none;border:0';
+      return;
     }
     evs.forEach(e => {
       const li = el('li', e.status === 'Diajukan' ? 'pending' : '');
@@ -121,6 +121,6 @@
   document.getElementById('next')?.addEventListener('click', () => go(1));
   document.getElementById('today')?.addEventListener('click', () => { y = now.getFullYear(); m = now.getMonth(); sel = iso(y, m, now.getDate()); load(); });
   document.getElementById('todayHeroBtn')?.addEventListener('click', () => { y = now.getFullYear(); m = now.getMonth(); sel = iso(y, m, now.getDate()); load(); });
-  
+
   load();
 })();

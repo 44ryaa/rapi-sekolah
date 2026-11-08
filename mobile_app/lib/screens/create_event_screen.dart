@@ -20,6 +20,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   List<Room> _rooms = [];
   int? _selectedRoomId;
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
+  bool _isMultiDay = false;
+  DateTime? _endDate;
   int _sessionStart = 1;
   int _sessionEnd = 1;
 
@@ -106,8 +108,29 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       },
     );
     if (picked != null) {
-      setState(() => _selectedDate = picked);
+      setState(() {
+        _selectedDate = picked;
+        if (_endDate != null && _endDate!.isBefore(_selectedDate)) {
+          _endDate = _selectedDate.add(const Duration(days: 1));
+        }
+      });
       _checkSlots();
+    }
+  }
+
+  Future<void> _pickEndDate() async {
+    final initial = _endDate ?? _selectedDate.add(const Duration(days: 1));
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial.isBefore(_selectedDate) ? _selectedDate : initial,
+      firstDate: _selectedDate,
+      lastDate: _selectedDate.add(const Duration(days: 14)),
+      selectableDayPredicate: (date) {
+        return date.weekday != DateTime.saturday && date.weekday != DateTime.sunday;
+      },
+    );
+    if (picked != null) {
+      setState(() => _endDate = picked);
     }
   }
 
@@ -129,10 +152,15 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
     setState(() => _isSubmitting = true);
     final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
+    final endDateStr = (_isMultiDay && _endDate != null)
+        ? DateFormat('yyyy-MM-dd').format(_endDate!)
+        : null;
+
     final res = await _api.createEvent(
       roomId: _selectedRoomId!,
       eventName: name,
       date: dateStr,
+      endDate: endDateStr,
       sessionStart: _sessionStart,
       sessionEnd: _sessionStart == 6 ? null : _sessionEnd,
     );
@@ -218,9 +246,40 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             },
                           ),
                           const SizedBox(height: 16),
-                          const Text(
-                            'Tanggal Peminjaman',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _isMultiDay ? 'Tanggal Mulai' : 'Tanggal Peminjaman',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                              ),
+                              Row(
+                                children: [
+                                  Switch(
+                                    value: _isMultiDay,
+                                    activeColor: AppTheme.ivory,
+                                    activeTrackColor: AppTheme.bronze,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _isMultiDay = val;
+                                        if (val && _endDate == null) {
+                                          _endDate = _selectedDate.add(const Duration(days: 1));
+                                          if (_endDate!.weekday == DateTime.saturday) {
+                                            _endDate = _endDate!.add(const Duration(days: 2));
+                                          } else if (_endDate!.weekday == DateTime.sunday) {
+                                            _endDate = _endDate!.add(const Duration(days: 1));
+                                          }
+                                        }
+                                      });
+                                    },
+                                  ),
+                                  const Text(
+                                    'Multi-Hari',
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.ivory),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 8),
                           InkWell(
@@ -236,6 +295,34 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               ),
                             ),
                           ),
+                          if (_isMultiDay) ...[
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Tanggal Selesai (Hingga)',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                            const SizedBox(height: 8),
+                            InkWell(
+                              onTap: _pickEndDate,
+                              borderRadius: BorderRadius.circular(12),
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  prefixIcon: Icon(Icons.event_repeat_rounded),
+                                ),
+                                child: Text(
+                                  _endDate != null
+                                      ? DateFormat('EEEE, d MMMM yyyy', 'id_ID').format(_endDate!)
+                                      : 'Pilih tanggal selesai',
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Hari Sabtu & Minggu otomatis dilewati (maksimal 14 hari).',
+                              style: TextStyle(fontSize: 11, color: AppTheme.textMuted),
+                            ),
+                          ],
                         ],
                       ),
                     ),

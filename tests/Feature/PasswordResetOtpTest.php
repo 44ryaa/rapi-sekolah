@@ -38,7 +38,7 @@ class PasswordResetOtpTest extends TestCase
         ]);
     }
 
-    public function test_user_can_request_otp_via_custom_typed_email(): void
+    public function test_otp_is_strictly_sent_to_registered_database_email(): void
     {
         Mail::fake();
 
@@ -49,24 +49,24 @@ class PasswordResetOtpTest extends TestCase
         ]);
 
         $response->assertRedirect('/verify-otp');
-        $response->assertSessionHas('reset_target_email', 'userpribadi@gmail.com');
+        $response->assertSessionHas('reset_target_email', 'guru1@rapi-sekolah.local');
         Mail::assertSent(ResetPasswordOtpMail::class, function ($mail) {
-            return $mail->hasTo('userpribadi@gmail.com');
+            return $mail->hasTo('guru1@rapi-sekolah.local');
         });
     }
 
-    public function test_user_can_request_otp_via_whatsapp_with_custom_phone(): void
+    public function test_user_can_request_otp_via_whatsapp_registered_phone(): void
     {
         $response = $this->post('/forgot', [
             'username' => 'guru1',
             'channel' => 'whatsapp',
-            'custom_phone' => '08987654321',
+            'custom_phone' => '08987654321', // Diabaikan karena sistem wajib menggunakan nomor terdaftar di database
         ]);
 
         $response->assertRedirect('/verify-otp');
-        $response->assertSessionHas('reset_target_phone', '628987654321');
+        $response->assertSessionHas('reset_target_phone', '62895611029000');
         $response->assertSessionHas('wa_url');
-        $this->assertStringContainsString('628987654321', session('wa_url'));
+        $this->assertStringContainsString('62895611029000', session('wa_url'));
     }
 
     public function test_user_can_verify_otp_and_reset_password(): void

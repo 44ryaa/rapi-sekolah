@@ -53,16 +53,12 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <a href="{{ route('calendar') }}" class="topbar-brand">
-    <div class="brand-mark-squircle topbar-squircle">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-        <polyline points="2 17 12 22 22 17"/>
-        <polyline points="2 12 12 17 22 12"/>
-      </svg>
+    <div class="brand-mark-squircle topbar-squircle" style="background:#fff;padding:2px;overflow:hidden;border-radius:8px;">
+      <img src="{{ asset('assets/img/logo-smk.png') }}" alt="Logo SMK N 1 Bantul" style="width:100%;height:100%;object-fit:contain;">
     </div>
     <div class="topbar-brand-text">
       <span class="topbar-brand-title">RAPI-Sekolah</span>
-      <span class="topbar-page-label">{{ $pageTitle }}</span>
+      <span class="topbar-page-label">SMK N 1 Bantul</span>
     </div>
   </a>
   <div class="topbar-right">
@@ -102,17 +98,12 @@
   {{-- ── Left Sidebar (Dark Espresso with Cream Squircle) ── --}}
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-mark-squircle">
-        {{-- Custom stylish geometric stack glyph like image 2 top-left --}}
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-          <polyline points="2 17 12 22 22 17"/>
-          <polyline points="2 12 12 17 22 12"/>
-        </svg>
+      <div class="brand-mark-squircle" style="background:#fff;padding:3px;overflow:hidden;border-radius:10px;">
+        <img src="{{ asset('assets/img/logo-smk.png') }}" alt="Logo SMK N 1 Bantul" style="width:100%;height:100%;object-fit:contain;">
       </div>
       <div class="brand-info">
         <span class="brand-title">RAPI-Sekolah</span>
-        <span class="brand-sub">Sistem Sarpras Terpadu</span>
+        <span class="brand-sub">SMK Negeri 1 Bantul</span>
       </div>
       <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Tutup menu">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>

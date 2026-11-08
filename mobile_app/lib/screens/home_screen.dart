@@ -98,15 +98,36 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(6),
+              width: 34,
+              height: 34,
+              padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
-                color: AppTheme.primaryLight,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.school, color: AppTheme.primary, size: 20),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.asset(
+                  'assets/images/logo_smk.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
-            const SizedBox(width: 8),
-            const Text('Rapi Sekolah'),
+            const SizedBox(width: 10),
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'RAPI-Sekolah',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'SMK Negeri 1 Bantul',
+                  style: TextStyle(fontSize: 11, color: AppTheme.textMuted),
+                ),
+              ],
+            ),
           ],
         ),
         actions: [
@@ -129,16 +150,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [AppTheme.primary, AppTheme.primaryDark],
+                    colors: [AppTheme.bronzeLight, AppTheme.surface],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.border),
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.primary.withValues(alpha: 0.3),
+                      color: Colors.black.withValues(alpha: 0.4),
                       blurRadius: 16,
-                      offset: const Offset(0, 8),
+                      offset: const Offset(0, 6),
                     ),
                   ],
                 ),
@@ -199,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: _buildQuickAction(
                       icon: Icons.calendar_today_rounded,
                       label: 'Pinjam\nRuang',
-                      color: AppTheme.primary,
+                      color: AppTheme.bronzeLight,
                       onTap: () async {
                         final res = await Navigator.push(
                           context,

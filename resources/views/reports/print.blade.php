@@ -301,18 +301,14 @@
 <div class="sheet">
   {{-- ═══ KOP SURAT RESMI SEKOLAH ═══ --}}
   <div class="kop">
-    <div class="kop-logo">
-      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-        <polyline points="2 17 12 22 22 17"/>
-        <polyline points="2 12 12 17 22 12"/>
-      </svg>
+    <div class="kop-logo" style="background:transparent;width:75px;height:75px;">
+      <img src="{{ asset('assets/img/logo-smk.png') }}" alt="Logo SMK N 1 Bantul" style="width:100%;height:100%;object-fit:contain;">
     </div>
     <div class="kop-text">
-      <h4>PEMERINTAH DAERAH PROVINSI · DINAS PENDIDIKAN</h4>
-      <h2>SMK NEGERI 1 RAPI SEKOLAH</h2>
+      <h4>PEMERINTAH DAERAH DAERAH ISTIMEWA YOGYAKARTA · DINAS PENDIDIKAN, PEMUDA, DAN OLAHRAGA</h4>
+      <h2>SMK NEGERI 1 BANTUL</h2>
       <h3>SISTEM INFORMASI SARANA &amp; PRASARANA SEKOLAH (RAPI-SEKOLAH)</h3>
-      <p>Jl. Pendidikan Terpadu No. 45 · Telp. (021) 87654321 · Email: sarpras@rapi-sekolah.sch.id</p>
+      <p>Jl. Parangtritis No.KM.11, Sabdodadi, Kec. Bantul, Kabupaten Bantul, Daerah Istimewa Yogyakarta 55715</p>
     </div>
   </div>
 

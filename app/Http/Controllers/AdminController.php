@@ -240,6 +240,27 @@ class AdminController extends Controller
         return back()->with('success', 'Data ruang disimpan.');
     }
 
+    public function roomDelete(int $id)
+    {
+        $room = Room::findOrFail($id);
+
+        // Cek apakah ada peminjaman atau pengaduan terkait ruangan ini
+        $hasEvents = $room->events()->exists();
+        $hasComplaints = $room->complaints()->exists();
+
+        if ($hasEvents || $hasComplaints) {
+            // Jika ada data historis, nonaktifkan ruangan agar data lama tidak rusak
+            $room->update(['is_active' => false]);
+
+            return back()->with('success', "Ruangan '{$room->room_name}' memiliki riwayat kegiatan/pengaduan, sehingga statusnya dinonaktifkan (arsip).");
+        }
+
+        $roomName = $room->room_name;
+        $room->delete();
+
+        return back()->with('success', "Ruangan '{$roomName}' berhasil dihapus secara permanen.");
+    }
+
     private function normalizePhone(string $p): string
     {
         $p = preg_replace('/\D/', '', $p);

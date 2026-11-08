@@ -58,6 +58,42 @@ class DatabaseSeeder extends Seeder
             'role_id' => Role::PIC,
         ]);
 
+        $picLega = User::create([
+            'username' => 'lega',
+            'email' => 'lega@rapi-sekolah.local',
+            'password' => Hash::make('pic123'),
+            'fullname' => 'Lega Danu Kumara',
+            'phone_number' => '0895611029000',
+            'role_id' => Role::PIC,
+        ]);
+
+        $picWahid = User::create([
+            'username' => 'wahid',
+            'email' => 'wahid@rapi-sekolah.local',
+            'password' => Hash::make('pic123'),
+            'fullname' => 'Wahid Abduraman',
+            'phone_number' => '0895611029000',
+            'role_id' => Role::PIC,
+        ]);
+
+        $picHeri = User::create([
+            'username' => 'heri',
+            'email' => 'heri@rapi-sekolah.local',
+            'password' => Hash::make('pic123'),
+            'fullname' => 'Heri Prasetyo',
+            'phone_number' => '0895611029000',
+            'role_id' => Role::PIC,
+        ]);
+
+        $picArif = User::create([
+            'username' => 'arif',
+            'email' => 'arif@rapi-sekolah.local',
+            'password' => Hash::make('pic123'),
+            'fullname' => 'Arif Kurniawan',
+            'phone_number' => '0895611029000',
+            'role_id' => Role::PIC,
+        ]);
+
         User::create([
             'username' => 'guru1',
             'email' => 'guru1@rapi-sekolah.local',

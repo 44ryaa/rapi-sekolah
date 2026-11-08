@@ -49,8 +49,8 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(auth.errorMessage ?? 'Login gagal.'),
-          backgroundColor: Colors.red.shade700,
+          content: Text(auth.errorMessage ?? 'Login gagal. Periksa akun Anda.'),
+          backgroundColor: AppTheme.statusRejected,
         ),
       );
     }
@@ -63,8 +63,10 @@ class _LoginScreenState extends State<LoginScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: AppTheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        side: BorderSide(color: AppTheme.border),
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
@@ -79,20 +81,25 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             const Text(
               'Pengaturan Server Backend',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textDark,
+              ),
             ),
             const SizedBox(height: 8),
             const Text(
-              'Gunakan alamat IP laptop kamu, contoh: http://172.20.10.2:8000 (Hotspot) atau http://10.0.2.2:8000 (Emulator).',
+              'Gunakan domain server produksi: https://rapi-sekolah.web.id',
               style: TextStyle(fontSize: 13, color: AppTheme.textMuted),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: urlController,
+              style: const TextStyle(color: AppTheme.textDark),
               decoration: InputDecoration(
                 labelText: 'Base URL API',
                 hintText: ApiService().baseUrl,
-                prefixIcon: const Icon(Icons.link),
+                prefixIcon: const Icon(Icons.link, color: AppTheme.ivory),
               ),
             ),
             const SizedBox(height: 16),
@@ -121,6 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -129,25 +137,64 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Logo & Header
+                // Badge Pill Header
                 Center(
                   child: Container(
-                    width: 76,
-                    height: 76,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryLight,
-                      borderRadius: BorderRadius.circular(20),
+                      color: AppTheme.bronze.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(color: AppTheme.border),
                     ),
-                    child: const Icon(
-                      Icons.school_rounded,
-                      size: 42,
-                      color: AppTheme.primary,
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.shield_outlined, size: 14, color: AppTheme.ivory),
+                        SizedBox(width: 6),
+                        Text(
+                          'Sistem Manajemen Sarpras Terpadu',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.ivory,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
+
+                // Brand Icon (Logo SMK Negeri 1 Bantul)
+                Center(
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.bronze.withValues(alpha: 0.5),
+                          blurRadius: 18,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.asset(
+                        'assets/images/logo_smk.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+
                 const Text(
-                  'Rapi Sekolah',
+                  'RAPI-Sekolah',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 26,
@@ -156,70 +203,126 @@ class _LoginScreenState extends State<LoginScreen> {
                     letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 const Text(
-                  'Sistem Sarana & Prasarana Sekolah',
+                  'SMK Negeri 1 Bantul',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.ivory,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Digitalisasi Sarana & Prasarana Sekolah',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
                     color: AppTheme.textMuted,
                   ),
                 ),
-                const SizedBox(height: 36),
+                const SizedBox(height: 32),
 
-                // Form card
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        TextField(
-                          controller: _usernameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Username',
-                            prefixIcon: Icon(Icons.person_outline),
-                          ),
-                          textInputAction: TextInputAction.next,
+                // Form card (Espresso + Bronze border)
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppTheme.border, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'Masuk ke Akun Anda',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textDark,
                         ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            prefixIcon: const Icon(Icons.lock_outline),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Akses untuk Admin, Waka, PIC Lab, Guru & OSIS',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.textMuted,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      TextField(
+                        controller: _usernameController,
+                        style: const TextStyle(color: AppTheme.textDark),
+                        decoration: const InputDecoration(
+                          labelText: 'Username',
+                          prefixIcon: Icon(Icons.person_outline),
+                        ),
+                        textInputAction: TextInputAction.next,
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextField(
+                        controller: _passwordController,
+                        obscureText: _obscurePassword,
+                        style: const TextStyle(color: AppTheme.textDark),
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
                             ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
                           ),
-                          onSubmitted: (_) => _handleLogin(),
                         ),
-                        const SizedBox(height: 24),
-                        ElevatedButton(
-                          onPressed: _isSubmitting ? null : _handleLogin,
-                          child: _isSubmitting
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text('Masuk Sekarang'),
+                        onSubmitted: (_) => _handleLogin(),
+                      ),
+                      const SizedBox(height: 24),
+
+                      ElevatedButton(
+                        onPressed: _isSubmitting ? null : _handleLogin,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.ivory,
+                          foregroundColor: AppTheme.black,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                      ],
-                    ),
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppTheme.black,
+                                ),
+                              )
+                            : const Text(
+                                'Masuk Sistem',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -227,10 +330,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Server settings button
                 TextButton.icon(
                   onPressed: _showServerSettings,
-                  icon: const Icon(Icons.settings_outlined, size: 18),
-                  label: const Text('Atur Alamat Server / Host'),
+                  icon: const Icon(Icons.tune_rounded, size: 16),
+                  label: const Text('Pengaturan Host Server'),
                   style: TextButton.styleFrom(
                     foregroundColor: AppTheme.textMuted,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                const Text(
+                  '© RAPI-Sekolah · Sistem Sarpras Terpadu',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppTheme.textMuted,
                   ),
                 ),
               ],

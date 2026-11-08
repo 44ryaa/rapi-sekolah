@@ -14,11 +14,11 @@ class ApiService {
   factory ApiService() => _instance;
   ApiService._internal();
 
-  static String get _defaultBaseUrl => kIsWeb ? 'http://localhost:8000' : 'http://172.20.10.2:8000';
+  static String get _defaultBaseUrl => 'https://rapi-sekolah.web.id';
   static const String _keyBaseUrl = 'api_base_url';
   static const String _keyToken = 'api_token';
 
-  String _baseUrl = kIsWeb ? 'http://localhost:8000' : 'http://172.20.10.2:8000';
+  String _baseUrl = 'https://rapi-sekolah.web.id';
   String? _token;
 
   String get baseUrl => _baseUrl;
@@ -163,14 +163,16 @@ class ApiService {
     required int roomId,
     required String eventName,
     required String date,
+    String? endDate,
     required int sessionStart,
     int? sessionEnd,
   }) async {
     final url = Uri.parse('$_baseUrl/api/events');
-    final body = {
+    final body = <String, dynamic>{
       'room_id': roomId,
       'event_name': eventName,
       'date': date,
+      if (endDate != null && endDate.isNotEmpty) 'end_date': endDate,
       'session_start': sessionStart,
       if (sessionEnd != null) 'session_end': sessionEnd,
     };

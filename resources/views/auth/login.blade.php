@@ -2,15 +2,11 @@
 @section('content')
 <section class="card narrow" style="padding:2.25rem 2rem;margin-top:1rem">
   <div style="text-align:center;margin-bottom:1.5rem">
-    <div class="brand-mark-squircle" style="margin:0 auto 1rem;width:54px;height:54px;border-radius:16px">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-        <polyline points="2 17 12 22 22 17"/>
-        <polyline points="2 12 12 17 22 12"/>
-      </svg>
+    <div style="margin:0 auto 1.25rem;width:68px;height:68px;padding:4px;background:#fff;border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,0.18);display:flex;align-items:center;justify-content:center;">
+      <img src="{{ asset('assets/img/logo-smk.png') }}" alt="Logo SMK Negeri 1 Bantul" style="width:100%;height:100%;object-fit:contain;">
     </div>
     <h1 style="font-size:1.6rem;margin-bottom:.35rem">Masuk ke RAPI-Sekolah</h1>
-    <p class="muted" style="font-size:.88rem">Sistem Pengelolaan Sarpras, Ruang &amp; Pengaduan Terpadu</p>
+    <p class="muted" style="font-size:.88rem">SMK Negeri 1 Bantul &middot; Sistem Pengelolaan Sarpras Terpadu</p>
   </div>
 
   <form method="post" action="{{ route('login') }}" class="form" autocomplete="on">

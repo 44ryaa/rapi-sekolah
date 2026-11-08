@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Notification;
 use App\Models\Room;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class EventApiController extends Controller
@@ -123,12 +124,14 @@ class EventApiController extends Controller
             'room_id' => 'required|integer',
             'event_name' => 'required|string|max:150',
             'date' => 'required|date_format:Y-m-d|after:today',
+            'end_date' => 'nullable|date_format:Y-m-d|after_or_equal:date',
             'session_start' => 'required|integer|between:1,6',
             'session_end' => 'nullable|integer|between:1,5',
         ]);
 
         $user = $request->user();
         $date = $request->date;
+        $endDate = $request->input('end_date');
         $sesStart = (int) $request->session_start;
         $sesEnd = (int) ($request->session_end ?? $sesStart);
 
@@ -155,29 +158,64 @@ class EventApiController extends Controller
             return response()->json(['message' => 'Ruang tidak tersedia.'], 422);
         }
 
-        $conflict = Event::hasConflict((int) $request->room_id, $date, $start, $end);
-        if ($conflict) {
-            return response()->json([
-                'message' => "Ruang sudah dipesan untuk \"{$conflict->event_name}\". Pilih sesi atau ruang lain.",
-            ], 422);
+        // Dukungan Multi-Hari
+        $dates = [];
+        $curr = Carbon::parse($date);
+        $last = $endDate ? Carbon::parse($endDate) : $curr->copy();
+
+        if ($curr->diffInDays($last) > 14) {
+            return response()->json(['message' => 'Maksimal rentang peminjaman multi-hari adalah 14 hari.'], 422);
+        }
+
+        while ($curr->lte($last)) {
+            if (! $curr->isWeekend()) {
+                $dates[] = $curr->format('Y-m-d');
+            }
+            $curr->addDay();
+        }
+
+        if (empty($dates)) {
+            return response()->json(['message' => 'Rentang tanggal yang dipilih hanya mencakup akhir pekan (Sabtu/Minggu).'], 422);
+        }
+
+        // Cek konflik di semua tanggal
+        foreach ($dates as $d) {
+            $conflict = Event::hasConflict((int) $request->room_id, $d, $start, $end);
+            if ($conflict) {
+                $dFormatted = date('d/m/Y', strtotime($d));
+
+                return response()->json([
+                    'message' => "Bentrok pada {$dFormatted}: Ruang sudah dipesan untuk \"{$conflict->event_name}\". Pilih tanggal atau ruang lain.",
+                ], 422);
+            }
         }
 
         $canAutoApprove = $user->isAdmin() || $user->isWaka();
+        $totalDays = count($dates);
+        $firstEvent = null;
 
-        $event = Event::create([
-            'room_id' => $request->room_id,
-            'pic_id' => $user->id,
-            'event_name' => $request->event_name,
-            'date' => $date,
-            'start_time' => $start,
-            'end_time' => $end,
-            'status' => $canAutoApprove ? 'Disetujui' : 'Diajukan',
-            'approved_by' => $canAutoApprove ? $user->id : null,
-        ]);
+        foreach ($dates as $idx => $d) {
+            $daySuffix = $totalDays > 1 ? ' (Hari '.($idx + 1).'/'.$totalDays.')' : '';
+            $created = Event::create([
+                'room_id' => $request->room_id,
+                'pic_id' => $user->id,
+                'event_name' => $request->event_name.$daySuffix,
+                'date' => $d,
+                'start_time' => $start,
+                'end_time' => $end,
+                'status' => $canAutoApprove ? 'Disetujui' : 'Diajukan',
+                'approved_by' => $canAutoApprove ? $user->id : null,
+            ]);
+            if ($firstEvent === null) {
+                $firstEvent = $created;
+            }
+        }
 
         return response()->json([
-            'data' => $this->eventResource($event->load(['room', 'requester'])),
-            'message' => $canAutoApprove ? 'Agenda disimpan dan langsung disetujui.' : 'Pengajuan terkirim. Menunggu persetujuan.',
+            'data' => $this->eventResource($firstEvent->load(['room', 'requester'])),
+            'message' => $totalDays > 1
+                ? "Peminjaman multi-hari ({$totalDays} hari) berhasil diajukan".($canAutoApprove ? ' dan disetujui.' : '.')
+                : ($canAutoApprove ? 'Agenda disimpan dan langsung disetujui.' : 'Pengajuan terkirim. Menunggu persetujuan.'),
         ], 201);
     }
 

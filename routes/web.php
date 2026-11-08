@@ -9,7 +9,7 @@ use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public ──────────────────────────────────────────────────────────────
-Route::get('/', fn () => redirect()->route('calendar'));
+Route::get('/', fn () => view('landing'))->name('landing');
 
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin,waka')->group(function () {
         Route::get('/admin/rooms', [AdminController::class, 'rooms'])->name('admin.rooms');
         Route::post('/admin/rooms', [AdminController::class, 'roomSave'])->name('admin.rooms.save');
+        Route::post('/admin/rooms/{id}/delete', [AdminController::class, 'roomDelete'])->name('admin.rooms.delete');
 
         // Laporan Sarpras: Harian, Mingguan, Bulanan
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

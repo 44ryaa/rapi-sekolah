@@ -66,17 +66,19 @@ class AuthController extends Controller
     {
         $input = trim($request->input('username', ''));
         $channel = $request->input('channel', 'email'); // 'email' atau 'whatsapp'
-        $customPhone = trim($request->input('custom_phone', ''));
-        $customEmail = trim($request->input('custom_email', ''));
 
         if ($input === '') {
-            return back()->withErrors(['username' => 'Username atau Email wajib diisi.'])->withInput();
+            return back()->withErrors(['username' => 'Username atau Email akun wajib diisi.'])->withInput();
         }
 
-        // Cari user berdasarkan username atau email
+        // Cari user berdasarkan username atau email terdaftar di database
         $user = User::where('username', $input)->orWhere('email', $input)->first();
         if (! $user) {
-            return back()->withErrors(['username' => 'Akun dengan username atau email tersebut tidak ditemukan.'])->withInput();
+            return back()->withErrors(['username' => 'Akun dengan username atau email tersebut tidak ditemukan di database.'])->withInput();
+        }
+
+        if (empty($user->email)) {
+            return back()->withErrors(['username' => 'Akun ini belum memiliki alamat email yang tersimpan di database. Silakan hubungi Administrator.'])->withInput();
         }
 
         // Generate 6 digit angka OTP
@@ -99,17 +101,15 @@ class AuthController extends Controller
 
         $waUrl = null;
         if ($channel === 'whatsapp') {
-            // Tentukan nomor WhatsApp: gunakan custom_phone jika diisi, jika tidak gunakan phone_number dari user atau default '0895611029000'
-            $targetPhone = ! empty($customPhone) ? $customPhone : ($user->phone_number ?: '0895611029000');
-            $normalizedPhone = WhatsAppService::normalizePhone($targetPhone);
-
-            if (strlen($normalizedPhone) < 9) {
-                return back()->withErrors(['custom_phone' => 'Nomor WhatsApp tidak valid. Silakan masukkan nomor WhatsApp yang benar.'])->withInput();
+            $targetPhone = $user->phone_number;
+            if (empty($targetPhone)) {
+                return back()->withErrors(['channel' => 'Akun ini belum memiliki nomor WhatsApp terdaftar di database. Silakan gunakan metode Email.'])->withInput();
             }
 
+            $normalizedPhone = WhatsAppService::normalizePhone($targetPhone);
             session(['reset_target_phone' => $normalizedPhone]);
 
-            // Kirim via WhatsApp Service (Otomatis Fonnte jika token diset, atau fallback ke wa.me)
+            // Kirim via WhatsApp Service
             $waResult = WhatsAppService::sendOtp($normalizedPhone, $otp, $user);
             $waUrl = $waResult['wa_url'];
             session([
@@ -118,23 +118,20 @@ class AuthController extends Controller
             ]);
 
             $msg = $waResult['auto_sent']
-                ? "Kode OTP telah otomatis terkirim ke WhatsApp nomor {$normalizedPhone}!"
-                : "Kode OTP siap dikirim ke WhatsApp nomor {$normalizedPhone}.";
+                ? "Kode OTP telah otomatis terkirim ke WhatsApp nomor terdaftar ({$normalizedPhone})!"
+                : "Kode OTP siap dikirim ke WhatsApp nomor terdaftar ({$normalizedPhone}).";
         } else {
-            // Pengiriman via Gmail / Email (bisa email terdaftar atau email yang diketik user)
-            $targetEmail = ! empty($customEmail) ? $customEmail : $user->email;
-            if (! filter_var($targetEmail, FILTER_VALIDATE_EMAIL)) {
-                return back()->withErrors(['custom_email' => 'Alamat email penerima tidak valid.'])->withInput();
-            }
-
+            // Pengiriman via Gmail / Email (HANYA ke email resmi yang terdaftar di database)
+            $targetEmail = $user->email;
             session(['reset_target_email' => $targetEmail]);
+            $maskedEmail = $this->maskEmail($targetEmail);
 
             try {
                 Mail::to($targetEmail)->send(new ResetPasswordOtpMail($user, $otp));
-                $msg = "Kode OTP telah dikirimkan ke: {$targetEmail}. Silakan cek kotak masuk atau folder spam.";
+                $msg = "Kode OTP telah dikirimkan ke email resmi terdaftar ({$maskedEmail}). Silakan cek kotak masuk atau folder spam.";
             } catch (\Throwable $e) {
                 Log::warning('Gagal kirim email reset password: '.$e->getMessage());
-                $msg = "Kode OTP berhasil digenerate untuk email {$targetEmail}.";
+                $msg = "Kode OTP berhasil diproses untuk email terdaftar ({$maskedEmail}).";
             }
         }
 
@@ -215,13 +212,8 @@ class AuthController extends Controller
 
         $waUrl = null;
         if ($channel === 'whatsapp') {
-            $targetPhone = ! empty($customPhone) ? $customPhone : (session('reset_target_phone') ?: ($user->phone_number ?: '0895611029000'));
+            $targetPhone = session('reset_target_phone') ?: $user->phone_number;
             $normalizedPhone = WhatsAppService::normalizePhone($targetPhone);
-
-            if (strlen($normalizedPhone) < 9) {
-                return back()->withErrors(['custom_phone' => 'Nomor WhatsApp tidak valid.']);
-            }
-
             session(['reset_target_phone' => $normalizedPhone]);
 
             $waResult = WhatsAppService::sendOtp($normalizedPhone, $otp, $user);
@@ -232,18 +224,19 @@ class AuthController extends Controller
             ]);
 
             $msg = $waResult['auto_sent']
-                ? "Kode OTP baru telah otomatis terkirim ke WhatsApp nomor {$normalizedPhone}!"
-                : "Kode OTP baru telah disiapkan untuk WhatsApp nomor {$normalizedPhone}.";
+                ? "Kode OTP baru telah otomatis terkirim ke WhatsApp nomor terdaftar ({$normalizedPhone})!"
+                : "Kode OTP baru telah disiapkan untuk WhatsApp nomor terdaftar ({$normalizedPhone}).";
         } else {
-            $customEmail = trim($request->input('custom_email', ''));
-            $targetEmail = ! empty($customEmail) ? $customEmail : (session('reset_target_email') ?: $user->email);
+            // Strictly send to registered email from database
+            $targetEmail = $user->email;
             session(['reset_target_email' => $targetEmail]);
+            $maskedEmail = $this->maskEmail($targetEmail);
 
             try {
                 Mail::to($targetEmail)->send(new ResetPasswordOtpMail($user, $otp));
-                $msg = "Kode OTP baru telah dikirimkan ke Gmail {$targetEmail}.";
+                $msg = "Kode OTP baru telah dikirimkan ke email terdaftar di database ({$maskedEmail}).";
             } catch (\Throwable $e) {
-                $msg = 'Kode OTP baru telah dibuat.';
+                $msg = "Kode OTP baru telah digenerate untuk email terdaftar ({$maskedEmail}).";
             }
         }
 
@@ -346,5 +339,24 @@ class AuthController extends Controller
         }
 
         return $p;
+    }
+
+    private function maskEmail(string $email): string
+    {
+        $parts = explode('@', $email);
+        if (count($parts) !== 2) {
+            return $email;
+        }
+
+        $name = $parts[0];
+        $domain = $parts[1];
+
+        if (strlen($name) <= 2) {
+            $maskedName = substr($name, 0, 1).'*';
+        } else {
+            $maskedName = substr($name, 0, 2).str_repeat('*', max(strlen($name) - 3, 2)).substr($name, -1);
+        }
+
+        return $maskedName.'@'.$domain;
     }
 }

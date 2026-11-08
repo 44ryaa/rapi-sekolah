@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Notification;
 use App\Models\Room;
 use App\Services\IndonesianHolidayService;
+use App\Services\WhatsAppService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -267,10 +268,11 @@ class EventController extends Controller
 
         $canAutoApprove = $user->isAdmin() || $user->isWaka();
         $totalDays = count($dates);
+        $firstEvent = null;
 
         foreach ($dates as $idx => $d) {
             $daySuffix = $totalDays > 1 ? ' (Hari '.($idx + 1).'/'.$totalDays.')' : '';
-            Event::create([
+            $created = Event::create([
                 'room_id' => $room,
                 'pic_id' => $user->id,
                 'event_name' => $name.$daySuffix,
@@ -280,6 +282,18 @@ class EventController extends Controller
                 'status' => $canAutoApprove ? 'Disetujui' : 'Diajukan',
                 'approved_by' => $canAutoApprove ? $user->id : null,
             ]);
+            if ($firstEvent === null) {
+                $firstEvent = $created;
+            }
+        }
+
+        // Kirim notifikasi WA ke Waka jika statusnya Diajukan
+        if (! $canAutoApprove && $firstEvent) {
+            try {
+                WhatsAppService::notifyNewEvent($firstEvent);
+            } catch (\Throwable $e) {
+                // Jangan gagalkan alur jika WA error
+            }
         }
 
         $msgSuccess = $totalDays > 1
@@ -322,6 +336,13 @@ class EventController extends Controller
                 'user_id' => $ev->pic_id,
                 'message' => $msg,
             ]);
+
+            // Kirim notifikasi WhatsApp ke peminjam
+            try {
+                WhatsAppService::notifyEventStatus($ev, $ok, $reason);
+            } catch (\Throwable $e) {
+                // Jangan gagalkan alur jika WA error
+            }
         }
 
         if ($request->wantsJson()) {
