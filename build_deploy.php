@@ -1,12 +1,14 @@
 <?php
-$logo = base64_encode(file_get_contents(__DIR__ . '/public/assets/img/logo-smk.png'));
-$landing = base64_encode(file_get_contents(__DIR__ . '/resources/views/landing.blade.php'));
-$layout = base64_encode(file_get_contents(__DIR__ . '/resources/views/layouts/app.blade.php'));
-$login = base64_encode(file_get_contents(__DIR__ . '/resources/views/auth/login.blade.php'));
-$print = base64_encode(file_get_contents(__DIR__ . '/resources/views/reports/print.blade.php'));
-$auth = base64_encode(file_get_contents(__DIR__ . '/app/Http/Controllers/AuthController.php'));
-$forgot = base64_encode(file_get_contents(__DIR__ . '/resources/views/auth/forgot.blade.php'));
-$eventApi = base64_encode(file_get_contents(__DIR__ . '/app/Http/Controllers/Api/EventApiController.php'));
+
+$logo = base64_encode(file_get_contents(__DIR__.'/public/assets/img/logo-smk.png'));
+$landing = base64_encode(file_get_contents(__DIR__.'/resources/views/landing.blade.php'));
+$layout = base64_encode(file_get_contents(__DIR__.'/resources/views/layouts/app.blade.php'));
+$login = base64_encode(file_get_contents(__DIR__.'/resources/views/auth/login.blade.php'));
+$print = base64_encode(file_get_contents(__DIR__.'/resources/views/reports/print.blade.php'));
+$auth = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/AuthController.php'));
+$forgot = base64_encode(file_get_contents(__DIR__.'/resources/views/auth/forgot.blade.php'));
+$eventApi = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/Api/EventApiController.php'));
+$manifest = base64_encode(file_get_contents(__DIR__.'/public/manifest.json'));
 
 $payload = [
     'logo' => $logo,
@@ -17,6 +19,7 @@ $payload = [
     'auth' => $auth,
     'forgot' => $forgot,
     'eventApi' => $eventApi,
+    'manifest' => $manifest,
 ];
 
 $json = json_encode($payload, JSON_UNESCAPED_SLASHES);
@@ -47,6 +50,21 @@ foreach ($dirs as $d) {
     file_put_contents($d . "/logo-smk.jpg", $imgData);
 }
 echo "[OK] Logo SMK Negeri 1 Bantul berhasil disimpan di assets/img/\n";
+
+// 1b. PWA Manifest (Add to Home Screen)
+$manifestData = base64_decode($payload['manifest']);
+file_put_contents($publicRoot . "/manifest.json", $manifestData);
+file_put_contents($laravelRoot . "/public/manifest.json", $manifestData);
+echo "[OK] Web App Manifest (PWA) aktif untuk Add-to-Home-Screen di Android & iOS\n";
+
+// 1c. Hapus file APK lama jika masih tersisa di server
+@unlink($publicRoot . "/rapi-sekolah.apk");
+@unlink($laravelRoot . "/public/rapi-sekolah.apk");
+if (is_dir($publicRoot . "/download")) {
+    array_map('unlink', glob($publicRoot . "/download/*.*"));
+    @rmdir($publicRoot . "/download");
+}
+echo "[OK] Pembersihan file APK lama di server selesai\n";
 
 // 2. MySQL DB Update (personal_access_tokens)
 $envFile = $laravelRoot . "/.env";
@@ -132,6 +150,5 @@ echo "<p>Semua pembaruan sudah aktif:</p>
 PHP;
 
 $output = str_replace('__PAYLOAD_JSON__', $json, $template);
-file_put_contents(__DIR__ . '/public/deploy_update_all.php', $output);
-echo "Deploy script generated: public/deploy_update_all.php (Size: " . strlen($output) . " bytes)\n";
-
+file_put_contents(__DIR__.'/public/deploy_update_all.php', $output);
+echo 'Deploy script generated: public/deploy_update_all.php (Size: '.strlen($output)." bytes)\n";

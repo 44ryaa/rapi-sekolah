@@ -1,0 +1,25 @@
+{
+  "name": "RAPI-Sekolah SMK Negeri 1 Bantul",
+  "short_name": "RAPI-Sekolah",
+  "description": "Sistem Manajemen Sarana dan Prasarana Terpadu SMK Negeri 1 Bantul",
+  "start_url": "/calendar",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#1F150C",
+  "icons": [
+    {
+      "src": "/assets/img/logo-smk.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/img/logo-smk.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
