@@ -14,6 +14,12 @@ class Complaint extends Model
         'room_id', 'reporter_id', 'description', 'photo_path',
         'status', 'reject_reason',
         'status_repair', 'handler_id', 'repair_note',
+        'completion_photo_path', 'completed_at',
+    ];
+
+    protected $casts = [
+        'reported_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     public function room()

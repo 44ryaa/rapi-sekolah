@@ -440,7 +440,12 @@
           <td class="center"><span class="badge-print {{ $vCls }}">{{ $comp->status }}</span></td>
           <td class="center"><span class="badge-print {{ $rCls }}">{{ $comp->status_repair }}</span></td>
           <td>{{ $comp->handler?->fullname ?? '-' }}</td>
-          <td>{{ $comp->repair_note ?: ($comp->reject_reason ?: '-') }}</td>
+          <td>
+            {{ $comp->repair_note ?: ($comp->reject_reason ?: '-') }}
+            @if($comp->completion_photo_path)
+              <div style="font-size:8px;color:#124d2d;margin-top:2px;font-weight:bold;">[Bukti Foto: Terlampir]</div>
+            @endif
+          </td>
         </tr>
       @empty
         <tr>

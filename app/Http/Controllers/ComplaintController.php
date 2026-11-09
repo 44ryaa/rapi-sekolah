@@ -165,21 +165,64 @@ class ComplaintController extends Controller
             abort(403, 'Ruangan ini bukan tanggung jawab Anda sebagai PIC.');
         }
 
+        $completionPhotoPath = $complaint->completion_photo_path;
+
+        // Process uploaded completion photo (file or camera base64)
+        try {
+            if ($request->filled('completion_camera_photo_data')) {
+                $data = (string) $request->input('completion_camera_photo_data');
+                if (preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
+                    $data = substr($data, strpos($data, ',') + 1);
+                    $ext = strtolower($type[1]);
+                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                        $decoded = base64_decode($data);
+                        if ($decoded !== false) {
+                            $ext = ($ext === 'jpeg') ? 'jpg' : $ext;
+                            $filename = 'complaints/repair_livecam_'.uniqid().'.'.$ext;
+                            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $decoded);
+                            if ($completionPhotoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($completionPhotoPath)) {
+                                \Illuminate\Support\Facades\Storage::disk('public')->delete($completionPhotoPath);
+                            }
+                            $completionPhotoPath = $filename;
+                        }
+                    }
+                }
+            } elseif ($request->hasFile('completion_photo') && $request->file('completion_photo')->isValid()) {
+                $file = $request->file('completion_photo');
+                if ($file->getSize() > 5 * 1024 * 1024) {
+                    return back()->withErrors(['completion_photo' => 'Ukuran foto maksimal 5 MB.'])->withInput();
+                }
+                if ($completionPhotoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($completionPhotoPath)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($completionPhotoPath);
+                }
+                $completionPhotoPath = $file->store('complaints', 'public');
+            }
+        } catch (\Throwable $e) {
+            Log::error('Upload completion photo error: '.$e->getMessage());
+        }
+
+        // Rule: Jika status "Sudah Diperbaiki", WAJIB melampirkan foto bukti fisik perbaikan
+        if ($new === 'Sudah Diperbaiki' && empty($completionPhotoPath)) {
+            return back()->withErrors(['completion_photo' => 'Wajib melampirkan foto bukti fisik perbaikan untuk status Sudah Diperbaiki.'])->withInput();
+        }
+
         $complaint->update([
             'status' => 'Diterima',
             'status_repair' => $new,
             'handler_id' => $user->id,
             'repair_note' => $request->input('repair_note') ?: null,
+            'completion_photo_path' => $completionPhotoPath,
+            'completed_at' => ($new === 'Sudah Diperbaiki') ? ($complaint->completed_at ?? now()) : null,
         ]);
 
         if ($complaint->reporter_id) {
             Notification::create([
                 'user_id' => $complaint->reporter_id,
-                'message' => "Pengaduan kerusakan di {$complaint->room->room_name} kini berstatus: {$new}.",
+                'message' => "Pengaduan kerusakan di {$complaint->room->room_name} kini berstatus: {$new}.".($new === 'Sudah Diperbaiki' ? ' Foto bukti perbaikan telah diunggah oleh PIC.' : ''),
             ]);
         }
 
-        return back()->with('success', "Status perbaikan pengaduan berhasil diperbarui oleh PIC: {$new}.");
+        return back()->with('success', "Status perbaikan pengaduan berhasil diperbarui oleh PIC: {$new}.".($new === 'Sudah Diperbaiki' ? ' Bukti foto perbaikan telah tersimpan.' : ''));
     }
 
     public function delete(Request $request)
@@ -193,6 +236,9 @@ class ComplaintController extends Controller
 
         if ($complaint->photo_path) {
             \Storage::disk('public')->delete($complaint->photo_path);
+        }
+        if ($complaint->completion_photo_path) {
+            \Storage::disk('public')->delete($complaint->completion_photo_path);
         }
 
         $complaint->delete();

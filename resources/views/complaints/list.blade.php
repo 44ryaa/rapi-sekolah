@@ -147,12 +147,33 @@
       {{-- Description --}}
       <p style="margin:.65rem 0;line-height:1.55">{!! nl2br(e($c->description)) !!}</p>
 
-      {{-- Photo Attachment --}}
-      @if($c->photo_path)
-        <div style="margin:.6rem 0">
-          <a href="{{ asset('storage/'.$c->photo_path) }}" target="_blank" rel="noopener">
-            <img class="thumb" src="{{ asset('storage/'.$c->photo_path) }}" alt="Foto kerusakan {{ $c->room->room_name }}" loading="lazy" style="max-height:220px;border-radius:12px">
-          </a>
+      {{-- Photo Attachments (Sebelum & Sesudah Perbaikan) --}}
+      @if($c->photo_path || $c->completion_photo_path)
+        <div style="display:flex;gap:.85rem;flex-wrap:wrap;margin:.75rem 0">
+          @if($c->photo_path)
+            <div style="flex:1;min-width:180px;background:rgba(239,68,68,.05);padding:.55rem;border-radius:10px;border:1px solid rgba(239,68,68,.2)">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
+                <span class="badge bad" style="font-size:.68rem;padding:2px 7px">Foto Kerusakan (Sebelum)</span>
+              </div>
+              <a href="{{ asset('storage/'.$c->photo_path) }}" target="_blank" rel="noopener">
+                <img class="thumb" src="{{ asset('storage/'.$c->photo_path) }}" alt="Foto kerusakan {{ $c->room->room_name }}" loading="lazy" style="max-height:180px;width:100%;object-fit:cover;border-radius:8px">
+              </a>
+            </div>
+          @endif
+
+          @if($c->completion_photo_path)
+            <div style="flex:1;min-width:180px;background:rgba(16,185,129,.06);padding:.55rem;border-radius:10px;border:1px solid rgba(16,185,129,.25)">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
+                <span class="badge ok" style="font-size:.68rem;padding:2px 7px">Bukti Perbaikan (Sesudah)</span>
+                @if($c->completed_at)
+                  <span class="muted" style="font-size:.68rem">{{ $c->completed_at->format('d/m/Y H:i') }}</span>
+                @endif
+              </div>
+              <a href="{{ asset('storage/'.$c->completion_photo_path) }}" target="_blank" rel="noopener">
+                <img class="thumb" src="{{ asset('storage/'.$c->completion_photo_path) }}" alt="Foto selesai perbaikan {{ $c->room->room_name }}" loading="lazy" style="max-height:180px;width:100%;object-fit:cover;border-radius:8px">
+              </a>
+            </div>
+          @endif
         </div>
       @endif
 
@@ -167,6 +188,11 @@
         <div style="margin-top:.6rem;padding:.5rem .75rem;background:rgba(16, 185, 129, 0.08);border-left:3.5px solid #10b981;border-radius:6px;font-size:.82rem">
           <strong style="color:#059669">Keterangan Perbaikan (Selesai):</strong>
           <span style="display:block;margin-top:.2rem;color:var(--ink)">{{ $c->repair_note ?: 'Kerusakan telah selesai diperbaiki dan diuji fungsi oleh PIC.' }}</span>
+          @if($c->completion_photo_path)
+            <span style="display:inline-block;margin-top:.3rem;color:#059669;font-weight:600;font-size:.75rem">
+              &#10003; Bukti fisik foto perbaikan telah diverifikasi &amp; tersimpan.
+            </span>
+          @endif
         </div>
       @elseif($c->repair_note)
         <p class="note"><b>Catatan Penanganan PIC:</b> {{ $c->repair_note }}</p>
@@ -193,19 +219,39 @@
 
       {{-- ── PIC: Hanya PIC ruangan ini yang dapat mengubah status ─────── --}}
       @if($pic && (int)($c->room->pic_id ?? 0) === (int)$user->id)
-        <form method="post" action="{{ route('complaints.status') }}" class="form inline" style="margin-top:.85rem">@csrf
+        <form method="post" action="{{ route('complaints.status') }}" enctype="multipart/form-data" class="form" style="margin-top:.85rem;background:rgba(225,220,201,.04);padding:.85rem;border-radius:10px;border:1px solid var(--border)">@csrf
           <input type="hidden" name="id" value="{{ $c->id }}">
-          <label>Status Penanganan (PIC)
-            <select name="status_repair">
-              @foreach($statuses as $s)
-                <option {{ $s === $c->status_repair ? 'selected' : '' }}>{{ $s }}</option>
-              @endforeach
-            </select>
-          </label>
-          <label>Catatan Perkembangan
-            <input name="repair_note" value="{{ $c->repair_note }}" placeholder="Contoh: Spare part telah tiba, dipasang besok pagi.">
-          </label>
-          <button class="btn sm">Perbarui Status</button>
+          <div style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end">
+            <label style="flex:1;min-width:180px">Status Penanganan (PIC)
+              <select name="status_repair" id="statusSelect_{{ $c->id }}" onchange="toggleProofField({{ $c->id }})">
+                @foreach($statuses as $s)
+                  <option value="{{ $s }}" {{ $s === $c->status_repair ? 'selected' : '' }}>{{ $s }}</option>
+                @endforeach
+              </select>
+            </label>
+            <label style="flex:2;min-width:220px">Catatan Perkembangan
+              <input name="repair_note" value="{{ $c->repair_note }}" placeholder="Contoh: Komponen diganti baru & telah diuji coba.">
+            </label>
+            <button class="btn sm" type="submit">Perbarui Status</button>
+          </div>
+
+          {{-- Container Unggah Bukti Foto Selesai (Wajib jika status "Sudah Diperbaiki") --}}
+          <div id="proofBox_{{ $c->id }}" style="margin-top:.75rem;padding:.75rem;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);border-radius:8px;{{ $c->status_repair === 'Sudah Diperbaiki' ? '' : 'display:none;' }}">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
+              <label for="comp_photo_{{ $c->id }}" style="font-weight:700;font-size:.82rem;color:var(--ink);margin:0">
+                Foto Bukti Fisik Selesai Diperbaiki <span style="color:#ef4444">*</span>
+              </label>
+              @if($c->completion_photo_path)
+                <span class="badge ok" style="font-size:.68rem">Foto Tersimpan (Bisa Diperbarui)</span>
+              @else
+                <span class="badge bad" style="font-size:.68rem">Wajib Diunggah</span>
+              @endif
+            </div>
+            <p class="muted" style="font-size:.75rem;margin:0 0 .5rem">
+              Ambil foto langsung dengan kamera HP atau unggah file foto (Maks. 5 MB) sebagai bukti fasilitas telah normal kembali.
+            </p>
+            <input type="file" id="comp_photo_{{ $c->id }}" name="completion_photo" accept="image/*" capture="environment" style="font-size:.82rem">
+          </div>
         </form>
       @endif
 
@@ -278,6 +324,18 @@
 </div>
 
 <script>
+// Toggle container bukti foto perbaikan saat status 'Sudah Diperbaiki' dipilih
+function toggleProofField(id) {
+  const sel = document.getElementById('statusSelect_' + id);
+  const box = document.getElementById('proofBox_' + id);
+  if (!sel || !box) return;
+  if (sel.value === 'Sudah Diperbaiki') {
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
+}
+
 // Quick Filter helper
 function filterStatus(statusRepair) {
   document.querySelectorAll('article.card.item').forEach(el => {

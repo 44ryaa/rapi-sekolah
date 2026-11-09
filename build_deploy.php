@@ -9,6 +9,10 @@ $auth = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/AuthContr
 $forgot = base64_encode(file_get_contents(__DIR__.'/resources/views/auth/forgot.blade.php'));
 $eventApi = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/Api/EventApiController.php'));
 $manifest = base64_encode(file_get_contents(__DIR__.'/public/manifest.json'));
+$complaintsList = base64_encode(file_get_contents(__DIR__.'/resources/views/complaints/list.blade.php'));
+$complaintController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/ComplaintController.php'));
+$complaintModel = base64_encode(file_get_contents(__DIR__.'/app/Models/Complaint.php'));
+$complaintApiController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/Api/ComplaintApiController.php'));
 
 $payload = [
     'logo' => $logo,
@@ -20,6 +24,10 @@ $payload = [
     'forgot' => $forgot,
     'eventApi' => $eventApi,
     'manifest' => $manifest,
+    'complaintsList' => $complaintsList,
+    'complaintController' => $complaintController,
+    'complaintModel' => $complaintModel,
+    'complaintApiController' => $complaintApiController,
 ];
 
 $json = json_encode($payload, JSON_UNESCAPED_SLASHES);
@@ -105,6 +113,16 @@ try {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ");
     echo "[OK] Tabel personal_access_tokens aktif di MySQL (Fix Login Mobile)\n";
+
+    // 2b. Kolom bukti fisik perbaikan PIC di tabel complaints
+    $cols = $pdo->query("SHOW COLUMNS FROM `complaints` LIKE 'completion_photo_path'")->fetchAll();
+    if (empty($cols)) {
+        $pdo->exec("ALTER TABLE `complaints` ADD COLUMN `completion_photo_path` VARCHAR(255) NULL AFTER `repair_note`");
+        $pdo->exec("ALTER TABLE `complaints` ADD COLUMN `completed_at` DATETIME NULL AFTER `completion_photo_path`");
+        echo "[OK] Kolom completion_photo_path & completed_at berhasil ditambahkan ke tabel complaints di MySQL\n";
+    } else {
+        echo "[OK] Kolom completion_photo_path sudah siap di tabel complaints MySQL\n";
+    }
 } catch (\Throwable $e) {
     echo "[WARN] MySQL table update: " . $e->getMessage() . "\n";
 }
@@ -118,6 +136,10 @@ $filesToUpdate = [
     $laravelRoot . "/app/Http/Controllers/AuthController.php" => $payload['auth'],
     $laravelRoot . "/resources/views/auth/forgot.blade.php" => $payload['forgot'],
     $laravelRoot . "/app/Http/Controllers/Api/EventApiController.php" => $payload['eventApi'],
+    $laravelRoot . "/resources/views/complaints/list.blade.php" => $payload['complaintsList'],
+    $laravelRoot . "/app/Http/Controllers/ComplaintController.php" => $payload['complaintController'],
+    $laravelRoot . "/app/Models/Complaint.php" => $payload['complaintModel'],
+    $laravelRoot . "/app/Http/Controllers/Api/ComplaintApiController.php" => $payload['complaintApiController'],
 ];
 
 foreach ($filesToUpdate as $path => $b64) {
@@ -145,6 +167,7 @@ echo "<p>Semua pembaruan sudah aktif:</p>
   <li><b>Reset Password</b> wajib menggunakan alamat email resmi yang terdaftar di database</li>
   <li><b>Login Mobile Sanctum</b> diperbaiki (tabel token siap digunakan)</li>
   <li><b>Peminjaman Multi-Hari</b> aktif di Aplikasi Mobile Android & Web</li>
+  <li><b>Wajib Bukti Foto Selesai Perbaikan (PIC)</b> aktif: PIC wajib melampirkan foto bukti fisik saat status ditandai Sudah Diperbaiki, lengkap dengan tampilan Sebelum & Sesudah di kartu pengaduan dan lembar cetak laporan</li>
 </ul>
 <p style='color:#f59e0b;'><b>PENTING:</b> Silakan hapus file deploy_update_all.php ini dari cPanel public_html/ setelah selesai.</p>";
 PHP;

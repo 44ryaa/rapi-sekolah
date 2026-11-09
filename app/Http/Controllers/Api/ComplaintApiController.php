@@ -154,17 +154,53 @@ class ComplaintApiController extends Controller
             ->with(['room', 'reporter'])
             ->firstOrFail();
 
+        $completionPhotoPath = $complaint->completion_photo_path;
+
+        if ($request->filled('completion_camera_photo_data')) {
+            $data = (string) $request->input('completion_camera_photo_data');
+            if (preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
+                $data = substr($data, strpos($data, ',') + 1);
+                $ext = strtolower($type[1]);
+                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                    $decoded = base64_decode($data);
+                    if ($decoded !== false) {
+                        $ext = ($ext === 'jpeg') ? 'jpg' : $ext;
+                        $filename = 'complaints/repair_livecam_'.uniqid().'.'.$ext;
+                        Storage::disk('public')->put($filename, $decoded);
+                        if ($completionPhotoPath && Storage::disk('public')->exists($completionPhotoPath)) {
+                            Storage::disk('public')->delete($completionPhotoPath);
+                        }
+                        $completionPhotoPath = $filename;
+                    }
+                }
+            }
+        } elseif ($request->hasFile('completion_photo') && $request->file('completion_photo')->isValid()) {
+            $file = $request->file('completion_photo');
+            if ($completionPhotoPath && Storage::disk('public')->exists($completionPhotoPath)) {
+                Storage::disk('public')->delete($completionPhotoPath);
+            }
+            $completionPhotoPath = $file->store('complaints', 'public');
+        }
+
+        if ($request->status_repair === 'Sudah Diperbaiki' && empty($completionPhotoPath)) {
+            return response()->json([
+                'message' => 'Wajib melampirkan foto bukti fisik perbaikan untuk status Sudah Diperbaiki.',
+            ], 422);
+        }
+
         $complaint->update([
             'status' => 'Diterima',
             'status_repair' => $request->status_repair,
             'handler_id' => $user->id,
             'repair_note' => $request->repair_note,
+            'completion_photo_path' => $completionPhotoPath,
+            'completed_at' => ($request->status_repair === 'Sudah Diperbaiki') ? ($complaint->completed_at ?? now()) : null,
         ]);
 
         if ($complaint->reporter_id) {
             Notification::create([
                 'user_id' => $complaint->reporter_id,
-                'message' => "Pengaduan di {$complaint->room->room_name} kini berstatus: {$request->status_repair}.",
+                'message' => "Pengaduan di {$complaint->room->room_name} kini berstatus: {$request->status_repair}.".($request->status_repair === 'Sudah Diperbaiki' ? ' Foto bukti perbaikan telah diunggah oleh PIC.' : ''),
             ]);
         }
 
@@ -189,6 +225,9 @@ class ComplaintApiController extends Controller
         if ($complaint->photo_path) {
             Storage::disk('public')->delete($complaint->photo_path);
         }
+        if ($complaint->completion_photo_path) {
+            Storage::disk('public')->delete($complaint->completion_photo_path);
+        }
         $complaint->delete();
 
         return response()->json(['message' => 'Pengaduan berhasil dihapus.']);
@@ -204,6 +243,8 @@ class ComplaintApiController extends Controller
             'repair_note' => $c->repair_note,
             'reject_reason' => $c->reject_reason,
             'photo_url' => $c->photo_path ? url('storage/'.$c->photo_path) : null,
+            'completion_photo_url' => $c->completion_photo_path ? url('storage/'.$c->completion_photo_path) : null,
+            'completed_at' => $c->completed_at?->toISOString(),
             'room' => $c->room ? ['id' => $c->room->id, 'room_name' => $c->room->room_name] : null,
             'reporter' => $c->reporter ? ['id' => $c->reporter->id, 'fullname' => $c->reporter->fullname] : null,
             'handler' => $c->handler ? ['id' => $c->handler->id,  'fullname' => $c->handler->fullname] : null,
