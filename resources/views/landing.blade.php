@@ -600,7 +600,7 @@
       <nav class="nav-links">
         <a href="#fitur">Layanan</a>
         <a href="#alur">Alur Kerja</a>
-        <a href="#mobile">Aplikasi Mobile</a>
+        <a href="#responsif">Multi-Perangkat</a>
         <a href="{{ route('calendar') }}">Kalender Ruang</a>
       </nav>
 
@@ -665,15 +665,6 @@
         Buka Kalender Ruang
       </a>
 
-      <a href="{{ url('/download/rapi-sekolah.apk') }}" class="btn btn-outline" style="padding:0.85rem 1.75rem;font-size:1rem;" download>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        Unduh APK Mobile
-      </a>
-
       <a href="{{ route('login') }}" class="btn btn-outline" style="padding:0.85rem 1.75rem;font-size:1rem;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
@@ -701,7 +692,7 @@
     </div>
     <div class="metric-card">
       <div class="metric-num">Real-Time</div>
-      <div class="metric-label">Sinkronisasi Agenda &amp; Mobile</div>
+      <div class="metric-label">Sinkronisasi Kalender Agenda</div>
     </div>
   </div>
 
@@ -756,12 +747,13 @@
       <div class="feature-card">
         <div class="feature-icon-box">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-            <line x1="12" y1="18" x2="12.01" y2="18"/>
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
           </svg>
         </div>
-        <h3>Dukungan Aplikasi Mobile</h3>
-        <p>Akses cepat berbasis Android untuk pengecekan agenda dan input pengaduan sarana langsung dari lapangan.</p>
+        <h3>Desain 100% Responsif</h3>
+        <p>Akses lancar dari seluruh perangkat &mdash; laptop, tablet, hingga smartphone (Android &amp; iPhone) langsung lewat browser tanpa perlu instal aplikasi.</p>
       </div>
 
       <!-- 5 -->
@@ -820,39 +812,40 @@
     </div>
   </section>
 
-  <!-- Android Section -->
-  <section class="section" id="mobile" style="padding-top:1rem;">
+  <!-- Responsive Web Section -->
+  <section class="section" id="responsif" style="padding-top:1rem;">
     <div class="cta-box">
       <div style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.35rem 0.9rem;background:var(--badge-bg);border:1px solid var(--badge-border);border-radius:999px;font-size:0.825rem;font-weight:600;color:var(--badge-text);margin-bottom:1.25rem;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-          <line x1="12" y1="18" x2="12.01" y2="18"/>
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
         </svg>
-        Aplikasi Mobile Android
+        Akses Cepat &amp; Fleksibel
       </div>
-      <h2>Tersedia untuk Perangkat Android</h2>
-      <p>Pantau status ruang kelas, jadwal lab, dan laporkan kerusakan sarana langsung dari ponsel Anda.</p>
+      <h2>Optimal di Seluruh Perangkat</h2>
+      <p>Buka langsung lewat browser HP Android, iPhone, tablet, maupun laptop tanpa perlu instal aplikasi tambahan. Ringan, cepat, dan selalu terbarui.</p>
       <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap">
-        <a href="{{ url('/download/rapi-sekolah.apk') }}" class="btn btn-primary" style="padding:0.85rem 1.75rem;font-size:1rem;" download>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Unduh Aplikasi (.APK)
-        </a>
-        <a href="{{ route('calendar') }}" class="btn btn-outline" style="padding:0.85rem 1.75rem;font-size:1rem;">
+        <a href="{{ route('calendar') }}" class="btn btn-primary" style="padding:0.85rem 1.75rem;font-size:1rem;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
             <line x1="16" y1="2" x2="16" y2="6"/>
             <line x1="8" y1="2" x2="8" y2="6"/>
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
-          Gunakan Versi Web
+          Buka Kalender Ruang
+        </a>
+        <a href="{{ route('login') }}" class="btn btn-outline" style="padding:0.85rem 1.75rem;font-size:1rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Masuk Akun
         </a>
       </div>
       <div style="margin-top:1.25rem;font-size:0.825rem;color:var(--text-muted);">
-        Versi 1.0.0 &middot; Rilis Resmi APK &middot; Kompatibel dengan Android 8.0+
+        Kompatibel dengan Google Chrome, Safari, Microsoft Edge, &amp; Mozilla Firefox
       </div>
     </div>
   </section>
@@ -877,10 +870,10 @@
         <h4 style="color:var(--text);margin-bottom:1rem;font-size:0.95rem">Navigasi Cepat</h4>
         <ul style="list-style:none;display:grid;gap:0.5rem">
           <li><a href="{{ route('calendar') }}">Kalender Ketersediaan</a></li>
-          <li><a href="{{ url('/download/rapi-sekolah.apk') }}" download>Unduh APK Android</a></li>
           <li><a href="{{ route('login') }}">Masuk Akun</a></li>
           <li><a href="#fitur">Layanan Sarpras</a></li>
           <li><a href="#alur">Alur Peminjaman</a></li>
+          <li><a href="#responsif">Akses Multi-Perangkat</a></li>
         </ul>
       </div>
 

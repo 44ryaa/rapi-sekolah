@@ -137,3 +137,4 @@ file_put_contents(__DIR__ . '/public/deploy_update_all.php', $output);
 file_put_contents(__DIR__ . '/public/deploy_logo_update.php', $output);
 file_put_contents(__DIR__ . '/deploy_logo_update.php', $output);
 echo "Deploy scripts generated successfully. Size: " . strlen($output) . " bytes\n";
+
