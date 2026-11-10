@@ -23,6 +23,7 @@
   /* Paper sheet container */
   .sheet {
     background: #ffffff;
+    width: 100%;
     max-width: 900px;
     margin: 0 auto;
     padding: 30px 40px;
@@ -35,6 +36,7 @@
   .toolbar {
     position: sticky;
     top: 15px;
+    width: 100%;
     max-width: 900px;
     margin: 0 auto 15px;
     display: flex;
@@ -257,6 +259,144 @@
   .sig-name { font-weight: 800; text-decoration: underline; color: #000; }
   .sig-nip { font-size: 10px; color: #555; }
 
+  /* Table responsive container */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 16px;
+    border: 1px solid #d5d1c8;
+    border-radius: 6px;
+    background: #ffffff;
+  }
+  .table-responsive .summary-table,
+  .table-responsive .data-table {
+    margin-bottom: 0;
+    border: none;
+    min-width: 680px;
+  }
+  .mobile-scroll-hint {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #6e4408;
+    background: #fdf4e6;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border: 1px dashed #ede0bf;
+    font-weight: 600;
+  }
+
+  /* Mobile Screen Media Query */
+  @media (max-width: 768px) {
+    body {
+      padding: 10px 8px;
+      background: #1c1612;
+    }
+    .toolbar {
+      top: 8px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      gap: 8px;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .toolbar-left {
+      justify-content: center;
+      font-size: 12px;
+    }
+    .toolbar-actions {
+      display: flex;
+      width: 100%;
+      gap: 6px;
+    }
+    .btn-print {
+      flex: 1;
+      justify-content: center;
+      padding: 9px 12px;
+      font-size: 12px;
+    }
+    .btn-close {
+      padding: 9px 14px;
+      font-size: 12px;
+      justify-content: center;
+    }
+    .mobile-scroll-hint {
+      display: flex;
+    }
+    .sheet {
+      padding: 18px 12px;
+      border-radius: 8px;
+    }
+    .kop {
+      gap: 10px;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    .kop-logo {
+      width: 48px !important;
+      height: 48px !important;
+      flex-shrink: 0;
+    }
+    .kop-text h4 {
+      font-size: 8px;
+      line-height: 1.25;
+      letter-spacing: .02em;
+    }
+    .kop-text h2 {
+      font-size: 13.5px;
+      line-height: 1.2;
+      margin: 1px 0;
+    }
+    .kop-text h3 {
+      font-size: 9.5px;
+    }
+    .kop-text p {
+      font-size: 7.5px;
+      line-height: 1.25;
+    }
+    .doc-title {
+      margin-bottom: 10px;
+    }
+    .doc-title h1 {
+      font-size: 12px;
+    }
+    .doc-title .doc-subtitle {
+      font-size: 9.5px;
+    }
+    .meta-grid {
+      grid-template-columns: 1fr;
+      gap: 5px;
+      padding: 8px 10px;
+      font-size: 10px;
+      margin-bottom: 12px;
+    }
+    .meta-label {
+      width: 90px;
+    }
+    .section-heading {
+      font-size: 11px;
+      margin: 14px 0 6px;
+    }
+    .signature-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 18px;
+      font-size: 9.5px;
+    }
+    .sig-col {
+      padding: 0 4px;
+    }
+    .sig-space {
+      height: 45px;
+    }
+    .sig-nip {
+      font-size: 8.5px;
+    }
+  }
+
   /* Print Media Query */
   @media print {
     body {
@@ -268,10 +408,26 @@
       box-shadow: none !important;
       padding: 0 !important;
       max-width: 100% !important;
+      width: 100% !important;
       border-radius: 0 !important;
     }
-    .toolbar { display: none !important; }
-    .data-table tr { page-break-inside: avoid; }
+    .toolbar, .no-print, .mobile-scroll-hint {
+      display: none !important;
+    }
+    .table-responsive {
+      overflow: visible !important;
+      border: none !important;
+      margin-bottom: 16px !important;
+      background: transparent !important;
+    }
+    .table-responsive .summary-table,
+    .table-responsive .data-table {
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+    .data-table tr, .summary-table tr, .signature-grid {
+      page-break-inside: avoid !important;
+    }
     @page {
       size: A4 portrait;
       margin: 12mm 15mm 15mm 15mm;
@@ -340,120 +496,130 @@
 
   {{-- ═══ RINGKASAN EKSEKUTIF METRIK ═══ --}}
   <div class="section-heading">I. Ringkasan Eksekutif Metrik Sarpras</div>
-  <table class="summary-table">
-    <thead>
-      <tr>
-        <th colspan="4" style="background:#e0d3ed;color:#4e3966">Agenda &amp; Peminjaman Ruangan</th>
-        <th colspan="4" style="background:#cae7ce;color:#225930">Pengaduan Kerusakan &amp; Pemeliharaan</th>
-      </tr>
-      <tr>
-        <th>Total Agenda</th>
-        <th>Disetujui</th>
-        <th>Menunggu</th>
-        <th>Ditolak</th>
-        <th>Total Aduan</th>
-        <th>Selesai</th>
-        <th>Menunggu Part</th>
-        <th>Belum Perbaikan</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><b>{{ $cntEventsTotal }}</b></td>
-        <td style="color:#124d2d;font-weight:700">{{ $cntEventsApproved }}</td>
-        <td style="color:#6e4408;font-weight:700">{{ $cntEventsPending }}</td>
-        <td style="color:#7a1616;font-weight:700">{{ $cntEventsRejected }}</td>
-        <td><b>{{ $cntComplaintsTotal }}</b></td>
-        <td style="color:#124d2d;font-weight:700">{{ $cntRepairDone }}</td>
-        <td style="color:#6e4408;font-weight:700">{{ $cntRepairWaiting }}</td>
-        <td style="color:#7a1616;font-weight:700">{{ $cntRepairPending }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="mobile-scroll-hint no-print">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    <span>Geser tabel ke samping untuk melihat kolom lengkap</span>
+  </div>
+  <div class="table-responsive">
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th colspan="4" style="background:#e0d3ed;color:#4e3966">Agenda &amp; Peminjaman Ruangan</th>
+          <th colspan="4" style="background:#cae7ce;color:#225930">Pengaduan Kerusakan &amp; Pemeliharaan</th>
+        </tr>
+        <tr>
+          <th>Total Agenda</th>
+          <th>Disetujui</th>
+          <th>Menunggu</th>
+          <th>Ditolak</th>
+          <th>Total Aduan</th>
+          <th>Selesai</th>
+          <th>Menunggu Part</th>
+          <th>Belum Perbaikan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>{{ $cntEventsTotal }}</b></td>
+          <td style="color:#124d2d;font-weight:700">{{ $cntEventsApproved }}</td>
+          <td style="color:#6e4408;font-weight:700">{{ $cntEventsPending }}</td>
+          <td style="color:#7a1616;font-weight:700">{{ $cntEventsRejected }}</td>
+          <td><b>{{ $cntComplaintsTotal }}</b></td>
+          <td style="color:#124d2d;font-weight:700">{{ $cntRepairDone }}</td>
+          <td style="color:#6e4408;font-weight:700">{{ $cntRepairWaiting }}</td>
+          <td style="color:#7a1616;font-weight:700">{{ $cntRepairPending }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   {{-- ═══ TABEL AGENDA & PEMINJAMAN RUANG ═══ --}}
   <div class="section-heading">II. Rekapitulasi Peminjaman &amp; Penggunaan Ruang ({{ $cntEventsTotal }} Agenda)</div>
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th class="center" style="width:25px">No</th>
-        <th>Tanggal &amp; Waktu</th>
-        <th>Nama Acara / Kegiatan</th>
-        <th>Ruangan</th>
-        <th>Peminjam / PIC</th>
-        <th class="center">Status</th>
-        <th>Persetujuan</th>
-        <th>Catatan / Alasan</th>
-      </tr>
-    </thead>
-    <tbody>
-      @forelse($events as $idx => $ev)
-        @php
-          $cls = ['Disetujui'=>'ok', 'Diajukan'=>'warn', 'Ditolak'=>'bad'][$ev->status] ?? '';
-        @endphp
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
         <tr>
-          <td class="center">{{ $idx + 1 }}</td>
-          <td>{{ $ev->date->translatedFormat('d/m/Y') }}<br><small style="color:#666">{{ substr($ev->start_time,0,5) }}–{{ substr($ev->end_time,0,5) }}</small></td>
-          <td><b>{{ $ev->event_name }}</b></td>
-          <td>{{ $ev->room?->room_name ?? '-' }}</td>
-          <td>{{ $ev->requester?->fullname ?? $ev->requester?->username ?? '-' }}</td>
-          <td class="center"><span class="badge-print {{ $cls }}">{{ $ev->status }}</span></td>
-          <td>{{ $ev->approver?->fullname ?? '-' }}</td>
-          <td>{{ $ev->move_reason ?: ($ev->reject_reason ?: '-') }}</td>
+          <th class="center" style="width:25px">No</th>
+          <th>Tanggal &amp; Waktu</th>
+          <th>Nama Acara / Kegiatan</th>
+          <th>Ruangan</th>
+          <th>Peminjam / PIC</th>
+          <th class="center">Status</th>
+          <th>Persetujuan</th>
+          <th>Catatan / Alasan</th>
         </tr>
-      @empty
-        <tr>
-          <td colspan="8" class="center" style="color:#777;padding:12px">Tidak ada data peminjaman ruangan pada periode ini.</td>
-        </tr>
-      @endforelse
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @forelse($events as $idx => $ev)
+          @php
+            $cls = ['Disetujui'=>'ok', 'Diajukan'=>'warn', 'Ditolak'=>'bad'][$ev->status] ?? '';
+          @endphp
+          <tr>
+            <td class="center">{{ $idx + 1 }}</td>
+            <td>{{ $ev->date->translatedFormat('d/m/Y') }}<br><small style="color:#666">{{ substr($ev->start_time,0,5) }}–{{ substr($ev->end_time,0,5) }}</small></td>
+            <td><b>{{ $ev->event_name }}</b></td>
+            <td>{{ $ev->room?->room_name ?? '-' }}</td>
+            <td>{{ $ev->requester?->fullname ?? $ev->requester?->username ?? '-' }}</td>
+            <td class="center"><span class="badge-print {{ $cls }}">{{ $ev->status }}</span></td>
+            <td>{{ $ev->approver?->fullname ?? '-' }}</td>
+            <td>{{ $ev->move_reason ?: ($ev->reject_reason ?: '-') }}</td>
+          </tr>
+        @empty
+          <tr>
+            <td colspan="8" class="center" style="color:#777;padding:12px">Tidak ada data peminjaman ruangan pada periode ini.</td>
+          </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 
   {{-- ═══ TABEL PENGADUAN & PERBAIKAN KERUSAKAN ═══ --}}
   <div class="section-heading">III. Rekapitulasi Pengaduan Kerusakan &amp; Pemeliharaan ({{ $cntComplaintsTotal }} Aduan)</div>
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th class="center" style="width:25px">No</th>
-        <th>Tanggal Lapor</th>
-        <th>Ruangan</th>
-        <th>Pelapor</th>
-        <th>Deskripsi Masalah</th>
-        <th class="center">Verifikasi</th>
-        <th class="center">Status Perbaikan</th>
-        <th>Teknisi / Handler</th>
-        <th>Catatan Perbaikan</th>
-      </tr>
-    </thead>
-    <tbody>
-      @forelse($complaints as $idx => $comp)
-        @php
-          $vCls = ['Diterima'=>'ok', 'Diajukan'=>'warn', 'Ditolak'=>'bad'][$comp->status] ?? '';
-          $rCls = ['Sudah Diperbaiki'=>'ok', 'Menunggu Spare Part'=>'warn', 'Belum Diperbaiki'=>'bad'][$comp->status_repair] ?? '';
-        @endphp
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
         <tr>
-          <td class="center">{{ $idx + 1 }}</td>
-          <td>{{ \Illuminate\Support\Carbon::parse($comp->reported_at)->translatedFormat('d/m/Y H:i') }}</td>
-          <td>{{ $comp->room?->room_name ?? '-' }}</td>
-          <td>{{ $comp->reporter?->fullname ?? $comp->reporter?->username ?? '-' }}</td>
-          <td>{{ $comp->description }}</td>
-          <td class="center"><span class="badge-print {{ $vCls }}">{{ $comp->status }}</span></td>
-          <td class="center"><span class="badge-print {{ $rCls }}">{{ $comp->status_repair }}</span></td>
-          <td>{{ $comp->handler?->fullname ?? '-' }}</td>
-          <td>
-            {{ $comp->repair_note ?: ($comp->reject_reason ?: '-') }}
-            @if($comp->completion_photo_path)
-              <div style="font-size:8px;color:#124d2d;margin-top:2px;font-weight:bold;">[Bukti Foto: Terlampir]</div>
-            @endif
-          </td>
+          <th class="center" style="width:25px">No</th>
+          <th>Tanggal Lapor</th>
+          <th>Ruangan</th>
+          <th>Pelapor</th>
+          <th>Deskripsi Masalah</th>
+          <th class="center">Verifikasi</th>
+          <th class="center">Status Perbaikan</th>
+          <th>Teknisi / Handler</th>
+          <th>Catatan Perbaikan</th>
         </tr>
-      @empty
-        <tr>
-          <td colspan="9" class="center" style="color:#777;padding:12px">Tidak ada data aduan kerusakan fasilitas pada periode ini.</td>
-        </tr>
-      @endforelse
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @forelse($complaints as $idx => $comp)
+          @php
+            $vCls = ['Diterima'=>'ok', 'Diajukan'=>'warn', 'Ditolak'=>'bad'][$comp->status] ?? '';
+            $rCls = ['Sudah Diperbaiki'=>'ok', 'Menunggu Spare Part'=>'warn', 'Belum Diperbaiki'=>'bad'][$comp->status_repair] ?? '';
+          @endphp
+          <tr>
+            <td class="center">{{ $idx + 1 }}</td>
+            <td>{{ \Illuminate\Support\Carbon::parse($comp->reported_at)->translatedFormat('d/m/Y H:i') }}</td>
+            <td>{{ $comp->room?->room_name ?? '-' }}</td>
+            <td>{{ $comp->reporter?->fullname ?? $comp->reporter?->username ?? '-' }}</td>
+            <td>{{ $comp->description }}</td>
+            <td class="center"><span class="badge-print {{ $vCls }}">{{ $comp->status }}</span></td>
+            <td class="center"><span class="badge-print {{ $rCls }}">{{ $comp->status_repair }}</span></td>
+            <td>{{ $comp->handler?->fullname ?? '-' }}</td>
+            <td>
+              {{ $comp->repair_note ?: ($comp->reject_reason ?: '-') }}
+              @if($comp->completion_photo_path)
+                <div style="font-size:8px;color:#124d2d;margin-top:2px;font-weight:bold;">[Bukti Foto: Terlampir]</div>
+              @endif
+            </td>
+          </tr>
+        @empty
+          <tr>
+            <td colspan="9" class="center" style="color:#777;padding:12px">Tidak ada data aduan kerusakan fasilitas pada periode ini.</td>
+          </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 
   {{-- ═══ LEMBAR PENGESAHAN / TANDA TANGAN RESMI ═══ --}}
   <div class="signature-grid">
