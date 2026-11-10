@@ -13,6 +13,7 @@ $complaintsList = base64_encode(file_get_contents(__DIR__.'/resources/views/comp
 $complaintController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/ComplaintController.php'));
 $complaintModel = base64_encode(file_get_contents(__DIR__.'/app/Models/Complaint.php'));
 $complaintApiController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/Api/ComplaintApiController.php'));
+$reportsIndex = base64_encode(file_get_contents(__DIR__.'/resources/views/reports/index.blade.php'));
 
 $payload = [
     'logo' => $logo,
@@ -28,6 +29,7 @@ $payload = [
     'complaintController' => $complaintController,
     'complaintModel' => $complaintModel,
     'complaintApiController' => $complaintApiController,
+    'reportsIndex' => $reportsIndex,
 ];
 
 $json = json_encode($payload, JSON_UNESCAPED_SLASHES);
@@ -140,6 +142,7 @@ $filesToUpdate = [
     $laravelRoot . "/app/Http/Controllers/ComplaintController.php" => $payload['complaintController'],
     $laravelRoot . "/app/Models/Complaint.php" => $payload['complaintModel'],
     $laravelRoot . "/app/Http/Controllers/Api/ComplaintApiController.php" => $payload['complaintApiController'],
+    $laravelRoot . "/resources/views/reports/index.blade.php" => $payload['reportsIndex'],
 ];
 
 foreach ($filesToUpdate as $path => $b64) {

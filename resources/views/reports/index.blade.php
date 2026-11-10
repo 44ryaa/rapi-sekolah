@@ -93,6 +93,22 @@
     color: var(--accent);
   }
 
+  /* Report Inputs */
+  .report-filter-input {
+    padding: .45rem .65rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-size: .85rem;
+    background: var(--c-surface-sub);
+    color: var(--ink);
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .report-filter-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(184, 130, 79, 0.15);
+  }
+
   /* Report Table Styling */
   .report-table-card {
     background: var(--c-surface);
@@ -110,7 +126,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: .75rem;
-    background: #ffffff;
+    background: var(--c-surface-sub);
   }
   .report-table-title {
     display: flex;
@@ -395,25 +411,23 @@
     @if($period === 'daily')
       <div style="display:flex;align-items:center;gap:.4rem">
         <label for="filterDate" style="font-size:.8rem;font-weight:700;color:var(--ink-secondary)">Tanggal:</label>
-        <input type="date" id="filterDate" name="date" value="{{ $selectedDate }}"
-               style="padding:.45rem .65rem;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:.85rem;background:#ffffff">
+        <input type="date" id="filterDate" name="date" value="{{ $selectedDate }}" class="report-filter-input">
       </div>
     @elseif($period === 'weekly')
       <div style="display:flex;align-items:center;gap:.4rem">
         <label for="filterWeekDate" style="font-size:.8rem;font-weight:700;color:var(--ink-secondary)">Pilih Minggu (Tanggal):</label>
-        <input type="date" id="filterWeekDate" name="date" value="{{ $selectedDate }}"
-               style="padding:.45rem .65rem;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:.85rem;background:#ffffff">
+        <input type="date" id="filterWeekDate" name="date" value="{{ $selectedDate }}" class="report-filter-input">
       </div>
     @else
       <div style="display:flex;align-items:center;gap:.4rem">
         <label for="filterMonth" style="font-size:.8rem;font-weight:700;color:var(--ink-secondary)">Bulan:</label>
-        <select id="filterMonth" name="month" style="padding:.45rem .65rem;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:.85rem;background:#ffffff">
+        <select id="filterMonth" name="month" class="report-filter-input">
           @foreach([1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'] as $mNum => $mName)
             <option value="{{ $mNum }}" {{ $selectedMonth == $mNum ? 'selected' : '' }}>{{ $mName }}</option>
           @endforeach
         </select>
         <label for="filterYear" style="font-size:.8rem;font-weight:700;color:var(--ink-secondary);margin-left:.25rem">Tahun:</label>
-        <select id="filterYear" name="year" style="padding:.45rem .65rem;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:.85rem;background:#ffffff">
+        <select id="filterYear" name="year" class="report-filter-input">
           @for($y = now()->year - 2; $y <= now()->year + 2; $y++)
             <option value="{{ $y }}" {{ $selectedYear == $y ? 'selected' : '' }}>{{ $y }}</option>
           @endfor
@@ -424,7 +438,7 @@
     {{-- Room Filter --}}
     <div style="display:flex;align-items:center;gap:.4rem">
       <label for="filterRoom" style="font-size:.8rem;font-weight:700;color:var(--ink-secondary)">Ruangan:</label>
-      <select id="filterRoom" name="room_id" style="padding:.45rem .65rem;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:.85rem;background:#ffffff">
+      <select id="filterRoom" name="room_id" class="report-filter-input">
         <option value="0">Semua Ruangan</option>
         @foreach($rooms as $r)
           <option value="{{ $r->id }}" {{ $roomId == $r->id ? 'selected' : '' }}>{{ $r->room_name }}</option>
