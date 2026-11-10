@@ -14,6 +14,9 @@ $complaintController = base64_encode(file_get_contents(__DIR__.'/app/Http/Contro
 $complaintModel = base64_encode(file_get_contents(__DIR__.'/app/Models/Complaint.php'));
 $complaintApiController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/Api/ComplaintApiController.php'));
 $reportsIndex = base64_encode(file_get_contents(__DIR__.'/resources/views/reports/index.blade.php'));
+$adminRooms = base64_encode(file_get_contents(__DIR__.'/resources/views/admin/rooms.blade.php'));
+$adminController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/AdminController.php'));
+$appJs = base64_encode(file_get_contents(__DIR__.'/public/assets/js/app.js'));
 
 $payload = [
     'logo' => $logo,
@@ -30,6 +33,9 @@ $payload = [
     'complaintModel' => $complaintModel,
     'complaintApiController' => $complaintApiController,
     'reportsIndex' => $reportsIndex,
+    'adminRooms' => $adminRooms,
+    'adminController' => $adminController,
+    'appJs' => $appJs,
 ];
 
 $json = json_encode($payload, JSON_UNESCAPED_SLASHES);
@@ -143,6 +149,10 @@ $filesToUpdate = [
     $laravelRoot . "/app/Models/Complaint.php" => $payload['complaintModel'],
     $laravelRoot . "/app/Http/Controllers/Api/ComplaintApiController.php" => $payload['complaintApiController'],
     $laravelRoot . "/resources/views/reports/index.blade.php" => $payload['reportsIndex'],
+    $laravelRoot . "/resources/views/admin/rooms.blade.php" => $payload['adminRooms'],
+    $laravelRoot . "/app/Http/Controllers/AdminController.php" => $payload['adminController'],
+    $laravelRoot . "/public/assets/js/app.js" => $payload['appJs'],
+    $publicRoot . "/assets/js/app.js" => $payload['appJs'],
 ];
 
 foreach ($filesToUpdate as $path => $b64) {

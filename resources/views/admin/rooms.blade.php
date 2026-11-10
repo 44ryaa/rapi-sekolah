@@ -82,10 +82,49 @@
       <input type="checkbox" name="is_active" id="rActive" checked>
       Ruang Aktif (Dapat Dipinjam dalam Agenda)
     </label>
-    <div class="actions" style="margin-top:1rem">
-      <button class="btn" type="submit">Simpan Ruang</button>
-      <button class="btn ghost" type="button" data-close>Batal</button>
+    <div class="actions" style="margin-top:1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem">
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <button class="btn" type="submit">Simpan Ruang</button>
+        <button class="btn ghost" type="button" data-close>Batal</button>
+      </div>
+      <button class="btn sm danger" type="button" id="btnDeleteRoomInModal" style="background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.3);display:none;align-items:center;gap:5px;cursor:pointer">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        Hapus Ruangan
+      </button>
     </div>
   </form>
 </dialog>
+
+{{-- Form Hapus Ruang Tersembunyi untuk Modal --}}
+<form id="deleteRoomFormInModal" method="post" action="" style="display:none">
+  @csrf
+</form>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const delBtn = document.getElementById('btnDeleteRoomInModal');
+  const delForm = document.getElementById('deleteRoomFormInModal');
+
+  document.querySelectorAll('[data-room]').forEach(b => {
+    b.addEventListener('click', () => {
+      const d = JSON.parse(b.dataset.room || '{}');
+      if (delBtn) {
+        if (d.id) {
+          delBtn.style.display = 'inline-flex';
+          delBtn.onclick = function() {
+            if (confirm(`Apakah Anda yakin ingin menghapus ruangan "${d.room_name}"?`)) {
+              delForm.action = `/admin/rooms/${d.id}/delete`;
+              delForm.submit();
+            }
+          };
+        } else {
+          delBtn.style.display = 'none';
+        }
+      }
+    });
+  });
+});
+</script>
+@endpush
 @endsection

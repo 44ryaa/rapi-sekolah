@@ -109,6 +109,25 @@
     $('#rLoc').value = d.location || ''; 
     $('#rPic').value = d.pic_id || 0; 
     $('#rActive').checked = d.id ? d.is_active == 1 : true;
+
+    const delBtn = $('#btnDeleteRoomInModal');
+    if (delBtn) {
+      if (d.id) {
+        delBtn.style.display = 'inline-flex';
+        delBtn.onclick = () => {
+          if (confirm(`Apakah Anda yakin ingin menghapus ruangan "${d.room_name}"?`)) {
+            const delForm = $('#deleteRoomFormInModal');
+            if (delForm) {
+              delForm.action = `/admin/rooms/${d.id}/delete`;
+              delForm.submit();
+            }
+          }
+        };
+      } else {
+        delBtn.style.display = 'none';
+      }
+    }
+
     $('#roomDialog')?.showModal();
   }));
 
