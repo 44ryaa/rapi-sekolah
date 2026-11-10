@@ -1,38 +1,43 @@
-name: Deploy to DomaiNesia
+name: CI/CD Deploy to cPanel DomaiNesia
 
 on:
   push:
     branches:
+      - master
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy via FTP
+    name: Build & Deploy ke Server
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout code
+      - name: 1. Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: 2. Setup PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.4'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, bcmath
 
-      - name: Install Composer dependencies
-        run: composer install --no-dev --optimize-autoloader --no-interaction
+      - name: 3. Install Composer Dependencies (Production)
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
 
-      - name: Setup Node.js
+      - name: 4. Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
-      - name: Install NPM dependencies & build assets
+      - name: 5. Build Vite Assets
         run: |
-          npm ci
+          npm ci --prefer-offline || npm install
           npm run build
 
-      - name: Deploy via FTP
+      - name: 6. Deploy Laravel Core via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -45,13 +50,15 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/**
+            **/tests/**
             .env
             .env.*
             storage/logs/*.log
-            mover.php
-            assets.zip
+            storage/framework/cache/**
+            storage/framework/views/**
+            storage/framework/sessions/**
 
-      - name: Deploy public assets via FTP
+      - name: 7. Deploy Public Assets via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -62,6 +69,11 @@ jobs:
           server-dir: /home/rapiseko/public_html/
           exclude: |
             **/.git*
-            mover.php
-            assets.zip
+            **/.git*/**
+            storage/**
 
+      - name: 8. Eksekusi Sinkronisasi Database & Bersihkan Cache Server
+        run: |
+          echo "Memanggil deploy hook di server..."
+          curl -s -L "https://rapi-sekolah.web.id/deploy_update_all.php" || true
+          echo "Selesai! Web rapi-sekolah.web.id telah diperbarui secara otomatis."
