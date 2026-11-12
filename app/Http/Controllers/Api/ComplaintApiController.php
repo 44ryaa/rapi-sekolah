@@ -76,8 +76,11 @@ class ComplaintApiController extends Controller
         $request->validate([
             'room_id' => 'required|integer',
             'description' => 'required|string|min:10',
-            'photo' => 'nullable|image|max:5120',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
             'camera_photo_data' => 'nullable|string',
+        ], [
+            'photo.mimes' => 'Format file bukti kerusakan harus berupa foto (JPG, JPEG, PNG, atau WEBP). Selain foto tidak diizinkan.',
+            'photo.max' => 'Ukuran foto maksimal 5 MB.',
         ]);
 
         $room = Room::where('id', $request->room_id)->where('is_active', 1)->first();
@@ -147,6 +150,11 @@ class ComplaintApiController extends Controller
         $request->validate([
             'status_repair' => 'required|in:Belum Diperbaiki,Menunggu Spare Part,Sudah Diperbaiki',
             'repair_note' => 'nullable|string|max:500',
+            'completion_photo' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'completion_camera_photo_data' => 'nullable|string',
+        ], [
+            'completion_photo.mimes' => 'Format file bukti perbaikan harus berupa foto (JPG, JPEG, PNG, atau WEBP). Selain foto tidak diizinkan.',
+            'completion_photo.max' => 'Ukuran foto maksimal 5 MB.',
         ]);
 
         $complaint = Complaint::where('id', $id)
