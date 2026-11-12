@@ -120,8 +120,8 @@
       <div id="fileUploadSection" style="display:none">
         <label style="margin:0">
           {{-- capture="environment" opens native camera on Android & iOS --}}
-          <input type="file" name="photo" id="photo" accept="image/*" capture="environment">
-          <small class="muted">Ketuk untuk membuka kamera atau pilih foto dari galeri (maks. 5 MB).</small>
+          <input type="file" name="photo" id="photo" accept="image/jpeg,image/png,image/webp,image/jpg" capture="environment">
+          <small class="muted">Ketuk untuk membuka kamera atau pilih foto dari galeri (khusus foto: JPG, PNG, WEBP, maks. 5 MB).</small>
         </label>
         <img id="preview" class="preview" alt="Pratinjau foto bukti" hidden style="margin-top:.75rem">
       </div>
