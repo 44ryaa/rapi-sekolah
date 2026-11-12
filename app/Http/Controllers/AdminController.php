@@ -134,11 +134,30 @@ class AdminController extends Controller
             rewind($handle);
         }
 
-        $header = fgetcsv($handle);
-        if (! $header) {
+        $firstLine = fgets($handle);
+        if ($firstLine === false) {
             fclose($handle);
 
             return back()->withErrors(['file' => 'File CSV kosong atau tidak memiliki baris judul kolom.']);
+        }
+
+        // Deteksi delimiter otomatis (koma, titik koma Excel Indo, atau tab)
+        $delimiters = [',', ';', "\t"];
+        $delimiter = ',';
+        $maxCount = 0;
+        foreach ($delimiters as $d) {
+            $cnt = substr_count($firstLine, $d);
+            if ($cnt > $maxCount) {
+                $maxCount = $cnt;
+                $delimiter = $d;
+            }
+        }
+
+        $header = str_getcsv(trim($firstLine), $delimiter);
+        if (empty($header) || count($header) < 2) {
+            fclose($handle);
+
+            return back()->withErrors(['file' => 'Format kolom file CSV tidak valid. Pastikan menggunakan template yang disediakan.']);
         }
 
         $colIndex = [];
@@ -149,7 +168,7 @@ class AdminController extends Controller
         $imported = 0;
         $updated = 0;
 
-        while (($row = fgetcsv($handle)) !== false) {
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
             if (empty(array_filter($row))) {
                 continue;
             }

@@ -20,6 +20,9 @@ $adminController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controller
 $whatsappService = base64_encode(file_get_contents(__DIR__.'/app/Services/WhatsAppService.php'));
 $appJs = base64_encode(file_get_contents(__DIR__.'/public/assets/js/app.js'));
 $routesApi = base64_encode(file_get_contents(__DIR__.'/routes/api.php'));
+$routesWeb = base64_encode(file_get_contents(__DIR__.'/routes/web.php'));
+$eventsList = base64_encode(file_get_contents(__DIR__.'/resources/views/events/list.blade.php'));
+$eventController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/EventController.php'));
 
 $payload = [
     'logo' => $logo,
@@ -42,6 +45,9 @@ $payload = [
     'whatsappService' => $whatsappService,
     'appJs' => $appJs,
     'routesApi' => $routesApi,
+    'routesWeb' => $routesWeb,
+    'eventsList' => $eventsList,
+    'eventController' => $eventController,
 ];
 
 $json = json_encode($payload, JSON_UNESCAPED_SLASHES);
@@ -160,6 +166,9 @@ $filesToUpdate = [
     $laravelRoot . "/app/Http/Controllers/AdminController.php" => $payload['adminController'],
     $laravelRoot . "/app/Services/WhatsAppService.php" => $payload['whatsappService'],
     $laravelRoot . "/routes/api.php" => $payload['routesApi'],
+    $laravelRoot . "/routes/web.php" => $payload['routesWeb'],
+    $laravelRoot . "/resources/views/events/list.blade.php" => $payload['eventsList'],
+    $laravelRoot . "/app/Http/Controllers/EventController.php" => $payload['eventController'],
     $laravelRoot . "/public/assets/js/app.js" => $payload['appJs'],
     $publicRoot . "/assets/js/app.js" => $payload['appJs'],
 ];
@@ -171,33 +180,45 @@ foreach ($filesToUpdate as $path => $b64) {
     echo "[OK] Diperbarui: " . basename($path) . "\n";
 }
 
-// 3b. Storage symlink — pastikan foto upload bisa diakses publik
-$storageSrc  = $laravelRoot . "/storage/app/public";
-$storageLink = $laravelRoot . "/public/storage";
+// 3b. Storage symlink — pastikan foto upload bisa diakses publik baik di public_html maupun di laravel/public
+$storageSrc = $laravelRoot . "/storage/app/public";
 
-// Buat direktori storage jika belum ada
+// Pastikan direktori fisik storage ada dan writable
 if (!is_dir($storageSrc)) {
-    @mkdir($storageSrc . "/complaints", 0755, true);
-    echo "[OK] Direktori storage/app/public dibuat\n";
+    @mkdir($storageSrc, 0777, true);
 }
 if (!is_dir($storageSrc . "/complaints")) {
-    @mkdir($storageSrc . "/complaints", 0755, true);
-    echo "[OK] Direktori storage/app/public/complaints dibuat\n";
+    @mkdir($storageSrc . "/complaints", 0777, true);
 }
+@chmod($storageSrc, 0777);
+@chmod($storageSrc . "/complaints", 0777);
+echo "[OK] Direktori storage/app/public/complaints siap & writable\n";
 
-// Buat symlink jika belum ada
-if (!is_link($storageLink) && !is_dir($storageLink)) {
-    if (@symlink($storageSrc, $storageLink)) {
-        echo "[OK] Storage symlink berhasil dibuat: public/storage -> storage/app/public\n";
-    } else {
-        // Fallback: buat folder dan copy manual
-        @mkdir($storageLink, 0755, true);
-        echo "[WARN] Symlink gagal, direktori public/storage dibuat sebagai fallback\n";
+$targetLinks = [
+    $publicRoot . "/storage",
+    $laravelRoot . "/public/storage",
+];
+
+foreach ($targetLinks as $link) {
+    if (is_link($link)) {
+        @unlink($link);
+    } elseif (is_dir($link)) {
+        // Jika folder kosong, hapus agar bisa dibuat symlink
+        $fList = @scandir($link);
+        if ($fList && count($fList) <= 2) {
+            @rmdir($link);
+        }
     }
-} elseif (is_link($storageLink)) {
-    echo "[OK] Storage symlink sudah ada\n";
-} else {
-    echo "[OK] public/storage sudah ada sebagai direktori\n";
+
+    if (!file_exists($link)) {
+        if (@symlink($storageSrc, $link)) {
+            echo "[OK] Symlink berhasil dibuat: " . basename(dirname($link)) . "/" . basename($link) . " -> storage/app/public\n";
+        } else {
+            echo "[WARN] Symlink gagal di {$link}, fallback routing via web.php tetap aktif\n";
+        }
+    } else {
+        echo "[OK] Target {$link} sudah ada\n";
+    }
 }
 
 // 4. Bersihkan Cache View

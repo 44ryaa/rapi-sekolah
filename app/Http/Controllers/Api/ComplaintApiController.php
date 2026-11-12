@@ -76,10 +76,11 @@ class ComplaintApiController extends Controller
         $request->validate([
             'room_id' => 'required|integer',
             'description' => 'required|string|min:10',
-            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp|mimetypes:image/jpeg,image/png,image/webp|max:5120',
             'camera_photo_data' => 'nullable|string',
         ], [
             'photo.mimes' => 'Format file bukti kerusakan harus berupa foto (JPG, JPEG, PNG, atau WEBP). Selain foto tidak diizinkan.',
+            'photo.mimetypes' => 'Format file bukti kerusakan harus berupa foto (JPG, JPEG, PNG, atau WEBP). Berkas dokumen atau HTML ditolak.',
             'photo.max' => 'Ukuran foto maksimal 5 MB.',
         ]);
 
@@ -92,16 +93,26 @@ class ComplaintApiController extends Controller
         try {
             if ($request->filled('camera_photo_data')) {
                 $data = (string) $request->camera_photo_data;
-                if (preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
-                    $raw = base64_decode(substr($data, strpos($data, ',') + 1));
-                    $ext = strtolower($type[1]) === 'jpeg' ? 'jpg' : strtolower($type[1]);
-                    if ($raw && in_array($ext, ['jpg', 'png', 'webp'])) {
-                        $photoPath = 'complaints/livecam_'.uniqid().'.'.$ext;
-                        Storage::disk('public')->put($photoPath, $raw);
+                if (preg_match('/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/s', $data, $matches)) {
+                    $raw = base64_decode($matches[2], true);
+                    $ext = strtolower($matches[1]) === 'jpeg' ? 'jpg' : strtolower($matches[1]);
+                    if ($raw && strlen($raw) > 0) {
+                        $imageInfo = @getimagesizefromstring($raw);
+                        if ($imageInfo !== false && in_array($imageInfo[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP])) {
+                            $photoPath = 'complaints/livecam_'.uniqid().'.'.$ext;
+                            Storage::disk('public')->put($photoPath, $raw);
+                        } else {
+                            return response()->json(['message' => 'Berkas bukan gambar valid. File HTML/dokumen ditolak.'], 422);
+                        }
                     }
                 }
             } elseif ($request->hasFile('photo') && $request->file('photo')->isValid()) {
-                $photoPath = $request->file('photo')->store('complaints', 'public');
+                $file = $request->file('photo');
+                $sample = @file_get_contents($file->getRealPath(), false, null, 0, 1024);
+                if ($sample && preg_match('/<html|<!doctype|<script|<body|<\?php/i', $sample)) {
+                    return response()->json(['message' => 'Berkas yang diunggah bukan foto valid. File HTML atau dokumen ditolak.'], 422);
+                }
+                $photoPath = $file->store('complaints', 'public');
             }
         } catch (\Throwable $e) {
             Log::error('API complaint upload error: '.$e->getMessage());

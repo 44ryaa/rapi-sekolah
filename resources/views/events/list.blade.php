@@ -364,8 +364,6 @@ function filterEvents(type) {
 function filterEventStatus(status) {
   filterEvents(status === 'Diajukan' ? 'pending' : (status === 'Disetujui' ? 'approved' : 'all'));
 }
-  });
-}
 </script>
 @endif
 @endsection

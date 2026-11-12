@@ -77,9 +77,10 @@ class ComplaintController extends Controller
         $request->validate([
             'room_id' => 'required|integer',
             'description' => 'required|string|min:10',
-            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp|mimetypes:image/jpeg,image/png,image/webp|max:5120',
         ], [
             'photo.mimes' => 'Format file bukti kerusakan harus berupa foto (JPG, JPEG, PNG, atau WEBP). Selain foto tidak diizinkan.',
+            'photo.mimetypes' => 'Format file bukti kerusakan harus berupa foto (JPG, JPEG, PNG, atau WEBP). Berkas dokumen atau HTML ditolak.',
             'photo.max' => 'Ukuran foto maksimal 5 MB.',
         ]);
 
@@ -96,26 +97,33 @@ class ComplaintController extends Controller
             // Check for real-time camera snapshot (base64)
             if ($request->filled('camera_photo_data')) {
                 $data = (string) $request->input('camera_photo_data');
-                if (preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
-                    $data = substr($data, strpos($data, ',') + 1);
-                    $ext = strtolower($type[1]);
-                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-                        $decoded = base64_decode($data);
-                        if ($decoded !== false) {
-                            $ext = ($ext === 'jpeg') ? 'jpg' : $ext;
+                if (preg_match('/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/s', $data, $matches)) {
+                    $ext = strtolower($matches[1]) === 'jpeg' ? 'jpg' : strtolower($matches[1]);
+                    $decoded = base64_decode($matches[2], true);
+                    if ($decoded !== false && strlen($decoded) > 0) {
+                        // Verifikasi konten biner benar-benar file gambar valid (anti HTML / shell script)
+                        $imageInfo = @getimagesizefromstring($decoded);
+                        if ($imageInfo !== false && in_array($imageInfo[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP])) {
                             $filename = 'complaints/livecam_'.uniqid().'.'.$ext;
                             \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $decoded);
                             $photoPath = $filename;
+                        } else {
+                            return back()->withErrors(['photo' => 'Berkas yang diunggah terdeteksi bukan gambar valid. File HTML/dokumen tidak diizinkan.'])->withInput();
                         }
-                    } else {
-                        return back()->withErrors(['photo' => 'Format foto kamera tidak valid. Gunakan format foto (JPG, PNG, WEBP).'])->withInput();
                     }
+                } else {
+                    return back()->withErrors(['photo' => 'Format foto kamera tidak valid. Gunakan format foto (JPG, PNG, WEBP).'])->withInput();
                 }
             }
 
             // Fallback to standard file upload if no camera snapshot
             if (! $photoPath && $request->hasFile('photo') && $request->file('photo')->isValid()) {
                 $file = $request->file('photo');
+                // Tolak jika terdeteksi file HTML / script terselubung
+                $sample = @file_get_contents($file->getRealPath(), false, null, 0, 1024);
+                if ($sample && preg_match('/<html|<!doctype|<script|<body|<\?php/i', $sample)) {
+                    return back()->withErrors(['photo' => 'Berkas yang diunggah bukan foto valid. File HTML atau dokumen ditolak.'])->withInput();
+                }
                 $photoPath = $file->store('complaints', 'public');
             }
         } catch (\Throwable $e) {
@@ -187,9 +195,10 @@ class ComplaintController extends Controller
 
         // Validasi format file foto bukti selesai: Foto only
         $request->validate([
-            'completion_photo' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+            'completion_photo' => 'nullable|file|mimes:jpg,jpeg,png,webp|mimetypes:image/jpeg,image/png,image/webp|max:5120',
         ], [
             'completion_photo.mimes' => 'Format bukti perbaikan harus berupa foto (JPG, JPEG, PNG, atau WEBP). Selain foto tidak diizinkan.',
+            'completion_photo.mimetypes' => 'Format bukti perbaikan harus berupa foto (JPG, JPEG, PNG, atau WEBP). Berkas dokumen atau HTML ditolak.',
             'completion_photo.max' => 'Ukuran foto maksimal 5 MB.',
         ]);
 
@@ -199,26 +208,32 @@ class ComplaintController extends Controller
         try {
             if ($request->filled('completion_camera_photo_data')) {
                 $data = (string) $request->input('completion_camera_photo_data');
-                if (preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
-                    $data = substr($data, strpos($data, ',') + 1);
-                    $ext = strtolower($type[1]);
-                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-                        $decoded = base64_decode($data);
-                        if ($decoded !== false) {
-                            $ext = ($ext === 'jpeg') ? 'jpg' : $ext;
+                if (preg_match('/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/s', $data, $matches)) {
+                    $ext = strtolower($matches[1]) === 'jpeg' ? 'jpg' : strtolower($matches[1]);
+                    $decoded = base64_decode($matches[2], true);
+                    if ($decoded !== false && strlen($decoded) > 0) {
+                        $imageInfo = @getimagesizefromstring($decoded);
+                        if ($imageInfo !== false && in_array($imageInfo[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP])) {
                             $filename = 'complaints/repair_livecam_'.uniqid().'.'.$ext;
                             \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $decoded);
                             if ($completionPhotoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($completionPhotoPath)) {
                                 \Illuminate\Support\Facades\Storage::disk('public')->delete($completionPhotoPath);
                             }
                             $completionPhotoPath = $filename;
+                        } else {
+                            return back()->withErrors(['completion_photo' => 'Berkas bukti perbaikan terdeteksi bukan gambar valid. File HTML/dokumen ditolak.'])->withInput();
                         }
-                    } else {
-                        return back()->withErrors(['completion_photo' => 'Format foto kamera bukti perbaikan tidak valid. Gunakan format foto (JPG, PNG, WEBP).'])->withInput();
                     }
+                } else {
+                    return back()->withErrors(['completion_photo' => 'Format foto kamera bukti perbaikan tidak valid. Gunakan format foto (JPG, PNG, WEBP).'])->withInput();
                 }
             } elseif ($request->hasFile('completion_photo') && $request->file('completion_photo')->isValid()) {
                 $file = $request->file('completion_photo');
+                // Tolak jika terdeteksi file HTML / script terselubung
+                $sample = @file_get_contents($file->getRealPath(), false, null, 0, 1024);
+                if ($sample && preg_match('/<html|<!doctype|<script|<body|<\?php/i', $sample)) {
+                    return back()->withErrors(['completion_photo' => 'Berkas yang diunggah bukan foto valid. File HTML atau dokumen ditolak.'])->withInput();
+                }
                 if ($completionPhotoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($completionPhotoPath)) {
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($completionPhotoPath);
                 }
