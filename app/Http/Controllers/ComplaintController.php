@@ -73,15 +73,21 @@ class ComplaintController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'room_id' => 'required|integer',
+            'description' => 'required|string|min:10',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+        ], [
+            'photo.mimes' => 'Format file bukti kerusakan harus berupa foto (JPG, JPEG, PNG, atau WEBP). Selain foto tidak diizinkan.',
+            'photo.max' => 'Ukuran foto maksimal 5 MB.',
+        ]);
+
         $roomId = (int) $request->input('room_id', 0);
         $desc = trim($request->input('description', ''));
 
         $room = Room::where('id', $roomId)->where('is_active', 1)->first();
         if (! $room) {
             return back()->withErrors(['room_id' => 'Pilih ruang yang valid.'])->withInput();
-        }
-        if (mb_strlen($desc) < 10) {
-            return back()->withErrors(['description' => 'Jelaskan kerusakan minimal 10 karakter.'])->withInput();
         }
 
         $photoPath = null;
@@ -100,6 +106,8 @@ class ComplaintController extends Controller
                             \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $decoded);
                             $photoPath = $filename;
                         }
+                    } else {
+                        return back()->withErrors(['photo' => 'Format foto kamera tidak valid. Gunakan format foto (JPG, PNG, WEBP).'])->withInput();
                     }
                 }
             }
@@ -107,9 +115,6 @@ class ComplaintController extends Controller
             // Fallback to standard file upload if no camera snapshot
             if (! $photoPath && $request->hasFile('photo') && $request->file('photo')->isValid()) {
                 $file = $request->file('photo');
-                if ($file->getSize() > 5 * 1024 * 1024) {
-                    return back()->withErrors(['photo' => 'Ukuran foto maksimal 5 MB.'])->withInput();
-                }
                 $photoPath = $file->store('complaints', 'public');
             }
         } catch (\Throwable $e) {
@@ -165,6 +170,14 @@ class ComplaintController extends Controller
             abort(403, 'Ruangan ini bukan tanggung jawab Anda sebagai PIC.');
         }
 
+        // Validasi format file foto bukti selesai: Foto only
+        $request->validate([
+            'completion_photo' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
+        ], [
+            'completion_photo.mimes' => 'Format bukti perbaikan harus berupa foto (JPG, JPEG, PNG, atau WEBP). Selain foto tidak diizinkan.',
+            'completion_photo.max' => 'Ukuran foto maksimal 5 MB.',
+        ]);
+
         $completionPhotoPath = $complaint->completion_photo_path;
 
         // Process uploaded completion photo (file or camera base64)
@@ -185,13 +198,12 @@ class ComplaintController extends Controller
                             }
                             $completionPhotoPath = $filename;
                         }
+                    } else {
+                        return back()->withErrors(['completion_photo' => 'Format foto kamera bukti perbaikan tidak valid. Gunakan format foto (JPG, PNG, WEBP).'])->withInput();
                     }
                 }
             } elseif ($request->hasFile('completion_photo') && $request->file('completion_photo')->isValid()) {
                 $file = $request->file('completion_photo');
-                if ($file->getSize() > 5 * 1024 * 1024) {
-                    return back()->withErrors(['completion_photo' => 'Ukuran foto maksimal 5 MB.'])->withInput();
-                }
                 if ($completionPhotoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($completionPhotoPath)) {
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($completionPhotoPath);
                 }
