@@ -10,13 +10,16 @@ $forgot = base64_encode(file_get_contents(__DIR__.'/resources/views/auth/forgot.
 $eventApi = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/Api/EventApiController.php'));
 $manifest = base64_encode(file_get_contents(__DIR__.'/public/manifest.json'));
 $complaintsList = base64_encode(file_get_contents(__DIR__.'/resources/views/complaints/list.blade.php'));
+$complaintsForm = base64_encode(file_get_contents(__DIR__.'/resources/views/complaints/form.blade.php'));
 $complaintController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/ComplaintController.php'));
 $complaintModel = base64_encode(file_get_contents(__DIR__.'/app/Models/Complaint.php'));
 $complaintApiController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/Api/ComplaintApiController.php'));
 $reportsIndex = base64_encode(file_get_contents(__DIR__.'/resources/views/reports/index.blade.php'));
 $adminRooms = base64_encode(file_get_contents(__DIR__.'/resources/views/admin/rooms.blade.php'));
 $adminController = base64_encode(file_get_contents(__DIR__.'/app/Http/Controllers/AdminController.php'));
+$whatsappService = base64_encode(file_get_contents(__DIR__.'/app/Services/WhatsAppService.php'));
 $appJs = base64_encode(file_get_contents(__DIR__.'/public/assets/js/app.js'));
+$routesApi = base64_encode(file_get_contents(__DIR__.'/routes/api.php'));
 
 $payload = [
     'logo' => $logo,
@@ -29,13 +32,16 @@ $payload = [
     'eventApi' => $eventApi,
     'manifest' => $manifest,
     'complaintsList' => $complaintsList,
+    'complaintsForm' => $complaintsForm,
     'complaintController' => $complaintController,
     'complaintModel' => $complaintModel,
     'complaintApiController' => $complaintApiController,
     'reportsIndex' => $reportsIndex,
     'adminRooms' => $adminRooms,
     'adminController' => $adminController,
+    'whatsappService' => $whatsappService,
     'appJs' => $appJs,
+    'routesApi' => $routesApi,
 ];
 
 $json = json_encode($payload, JSON_UNESCAPED_SLASHES);
@@ -145,12 +151,15 @@ $filesToUpdate = [
     $laravelRoot . "/resources/views/auth/forgot.blade.php" => $payload['forgot'],
     $laravelRoot . "/app/Http/Controllers/Api/EventApiController.php" => $payload['eventApi'],
     $laravelRoot . "/resources/views/complaints/list.blade.php" => $payload['complaintsList'],
+    $laravelRoot . "/resources/views/complaints/form.blade.php" => $payload['complaintsForm'],
     $laravelRoot . "/app/Http/Controllers/ComplaintController.php" => $payload['complaintController'],
     $laravelRoot . "/app/Models/Complaint.php" => $payload['complaintModel'],
     $laravelRoot . "/app/Http/Controllers/Api/ComplaintApiController.php" => $payload['complaintApiController'],
     $laravelRoot . "/resources/views/reports/index.blade.php" => $payload['reportsIndex'],
     $laravelRoot . "/resources/views/admin/rooms.blade.php" => $payload['adminRooms'],
     $laravelRoot . "/app/Http/Controllers/AdminController.php" => $payload['adminController'],
+    $laravelRoot . "/app/Services/WhatsAppService.php" => $payload['whatsappService'],
+    $laravelRoot . "/routes/api.php" => $payload['routesApi'],
     $laravelRoot . "/public/assets/js/app.js" => $payload['appJs'],
     $publicRoot . "/assets/js/app.js" => $payload['appJs'],
 ];
@@ -160,6 +169,35 @@ foreach ($filesToUpdate as $path => $b64) {
     if (!is_dir($dir)) { @mkdir($dir, 0755, true); }
     file_put_contents($path, base64_decode($b64));
     echo "[OK] Diperbarui: " . basename($path) . "\n";
+}
+
+// 3b. Storage symlink — pastikan foto upload bisa diakses publik
+$storageSrc  = $laravelRoot . "/storage/app/public";
+$storageLink = $laravelRoot . "/public/storage";
+
+// Buat direktori storage jika belum ada
+if (!is_dir($storageSrc)) {
+    @mkdir($storageSrc . "/complaints", 0755, true);
+    echo "[OK] Direktori storage/app/public dibuat\n";
+}
+if (!is_dir($storageSrc . "/complaints")) {
+    @mkdir($storageSrc . "/complaints", 0755, true);
+    echo "[OK] Direktori storage/app/public/complaints dibuat\n";
+}
+
+// Buat symlink jika belum ada
+if (!is_link($storageLink) && !is_dir($storageLink)) {
+    if (@symlink($storageSrc, $storageLink)) {
+        echo "[OK] Storage symlink berhasil dibuat: public/storage -> storage/app/public\n";
+    } else {
+        // Fallback: buat folder dan copy manual
+        @mkdir($storageLink, 0755, true);
+        echo "[WARN] Symlink gagal, direktori public/storage dibuat sebagai fallback\n";
+    }
+} elseif (is_link($storageLink)) {
+    echo "[OK] Storage symlink sudah ada\n";
+} else {
+    echo "[OK] public/storage sudah ada sebagai direktori\n";
 }
 
 // 4. Bersihkan Cache View

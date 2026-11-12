@@ -168,10 +168,24 @@
   // Deteksi perangkat mobile (Android / iOS / tablet)
   const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
-  // ── File input preview & Automatic Canvas Compression ────────────
+  // ── File input preview & Validation (foto only) ──────────────────
+  const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
   photoInput?.addEventListener('change', function () {
     const file = this.files[0];
     if (!file) return;
+
+    // Validasi MIME di sisi klien — tolak sebelum upload
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      alert('Format file tidak didukung!\nHanya foto yang diizinkan: JPG, PNG, atau WEBP.\nFile "' + file.name + '" (' + (file.type || 'tipe tidak dikenal') + ') ditolak.');
+      this.value = '';
+      previewImg.hidden = true;
+      previewImg.src = '';
+      if (cameraPhotoData) cameraPhotoData.value = '';
+      const badge = document.getElementById('compressBadge');
+      if (badge) badge.remove();
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = e => {
@@ -201,10 +215,13 @@
         previewImg.src = compressedDataUrl;
         previewImg.hidden = false;
 
-        // Kirim hasil kompresi langsung ke input tersembunyi
+        // Kirim hasil kompresi via hidden field, kosongkan input file asli
+        // agar hanya satu jalur upload yang aktif (base64 via camera_photo_data)
         if (cameraPhotoData) {
           cameraPhotoData.value = compressedDataUrl;
         }
+        // Kosongkan file input supaya tidak dikirim dobel
+        photoInput.value = '';
 
         let compBadge = document.getElementById('compressBadge');
         if (!compBadge) {
@@ -213,7 +230,14 @@
           compBadge.style.cssText = 'margin-top:.5rem;padding:.35rem .65rem;background:rgba(16,185,129,0.12);border:1px solid #10b981;color:#059669;border-radius:6px;font-size:.78rem;font-weight:600;display:inline-block';
           previewImg.parentNode.appendChild(compBadge);
         }
-        compBadge.innerHTML = '✓ Foto dikompres otomatis (Ukuran diperkecil &amp; cepat diunggah)';
+        compBadge.innerHTML = '&#10003; Foto dikompres otomatis (Ukuran diperkecil &amp; cepat diunggah)';
+      };
+      img.onerror = () => {
+        // Bukan gambar valid meski ekstensinya benar
+        alert('File tidak dapat dibaca sebagai gambar. Pastikan file yang dipilih adalah foto yang valid.');
+        photoInput.value = '';
+        if (cameraPhotoData) cameraPhotoData.value = '';
+        previewImg.hidden = true;
       };
       img.src = e.target.result;
     };

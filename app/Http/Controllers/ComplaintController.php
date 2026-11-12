@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\Role;
 use App\Models\Room;
 use App\Models\User;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -143,6 +144,20 @@ class ComplaintController extends Controller
                 'user_id' => $room->pic_id,
                 'message' => 'Pengaduan baru di '.$room->room_name.': '.mb_strimwidth($desc, 0, 90, '…'),
             ]);
+
+            // Kirim WhatsApp otomatis ke PIC ruangan
+            $pic = $room->pic;
+            if ($pic && $pic->phone_number) {
+                $msg = "*RAPI-Sekolah* — Pengaduan Kerusakan Baru\n\n"
+                    ."Halo *{$pic->fullname}*,\n"
+                    ."Terdapat laporan kerusakan baru di ruangan yang Anda tangani:\n\n"
+                    ."📍 *Ruang:* {$room->room_name}\n"
+                    ."👤 *Pelapor:* {$request->user()->fullname}\n"
+                    .'📝 *Kerusakan:* '.mb_strimwidth($desc, 0, 100, '…')."\n\n"
+                    ."Silakan login ke sistem untuk menangani pengaduan ini:\n"
+                    .'https://rapi-sekolah.web.id/complaints';
+                WhatsAppService::sendMessage($pic->phone_number, $msg);
+            }
         }
 
         return redirect()->route('complaints.index')->with('success', 'Pengaduan kerusakan terkirim ke PIC ruang.');
