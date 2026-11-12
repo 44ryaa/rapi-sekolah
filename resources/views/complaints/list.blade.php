@@ -248,9 +248,9 @@
               @endif
             </div>
             <p class="muted" style="font-size:.75rem;margin:0 0 .5rem">
-              Ambil foto langsung dengan kamera HP atau unggah file foto (Maks. 5 MB) sebagai bukti fasilitas telah normal kembali.
+              Ambil foto langsung dengan kamera HP atau unggah foto (khusus foto: JPG, PNG, WEBP, maks. 5 MB) sebagai bukti fasilitas telah normal kembali.
             </p>
-            <input type="file" id="comp_photo_{{ $c->id }}" name="completion_photo" accept="image/*" capture="environment" style="font-size:.82rem">
+            <input type="file" id="comp_photo_{{ $c->id }}" name="completion_photo" accept="image/jpeg,image/png,image/webp,image/jpg" capture="environment" style="font-size:.82rem">
           </div>
         </form>
       @endif
