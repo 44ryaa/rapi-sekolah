@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         // ── Users ─────────────────────────────────────────────────────────
         $admin = User::create([
             'username' => 'admin',
-            'email' => 'admin@rapi-sekolah.local',
+            'email' => 'aryasatriawicaksono33@gmail.com',
             'password' => Hash::make('admin123'),
             'fullname' => 'Administrator',
             'phone_number' => '0895611029000',

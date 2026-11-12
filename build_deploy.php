@@ -143,6 +143,10 @@ try {
     } else {
         echo "[OK] Kolom completion_photo_path sudah siap di tabel complaints MySQL\n";
     }
+
+    // 2c. Update Email Administrator ke aryasatriawicaksono33@gmail.com
+    $pdo->exec("UPDATE `users` SET `email` = 'aryasatriawicaksono33@gmail.com' WHERE `username` = 'admin'");
+    echo "[OK] Email Administrator berhasil diperbarui menjadi aryasatriawicaksono33@gmail.com\n";
 } catch (\Throwable $e) {
     echo "[WARN] MySQL table update: " . $e->getMessage() . "\n";
 }
