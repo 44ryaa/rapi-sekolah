@@ -7,6 +7,8 @@ use App\Models\Role;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class RoomApiController extends Controller
 {
@@ -81,6 +83,36 @@ class RoomApiController extends Controller
         $room->update($data);
 
         return response()->json(['data' => $this->roomResource($room->fresh('pic')), 'message' => 'Ruangan diperbarui.']);
+    }
+
+    /**
+     * DELETE /api/rooms/{id}  [Admin only]
+     */
+    public function destroy(Request $request, int $id)
+    {
+        $this->requireAdmin($request);
+
+        $room = Room::findOrFail($id);
+        $roomName = $room->room_name;
+
+        DB::transaction(function () use ($room) {
+            foreach ($room->complaints as $c) {
+                if ($c->photo_path && Storage::disk('public')->exists($c->photo_path)) {
+                    Storage::disk('public')->delete($c->photo_path);
+                }
+                if ($c->completion_photo_path && Storage::disk('public')->exists($c->completion_photo_path)) {
+                    Storage::disk('public')->delete($c->completion_photo_path);
+                }
+            }
+
+            $room->events()->delete();
+            $room->complaints()->delete();
+            $room->delete();
+        });
+
+        return response()->json([
+            'message' => "Ruangan '{$roomName}' beserta seluruh riwayat kegiatan dan pengaduannya berhasil dihapus bersih (clear).",
+        ]);
     }
 
     private function requireAdmin(Request $request): void
