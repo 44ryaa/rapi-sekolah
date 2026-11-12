@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/rooms/{id}', [RoomApiController::class, 'show'])->whereNumber('id');
     Route::post('/rooms', [RoomApiController::class, 'store']);       // Admin only
     Route::put('/rooms/{id}', [RoomApiController::class, 'update'])->whereNumber('id'); // Admin only
+    Route::delete('/rooms/{id}', [RoomApiController::class, 'destroy'])->whereNumber('id'); // Admin only
 
     // Events
     Route::get('/events/slots', [EventApiController::class, 'slots']);
