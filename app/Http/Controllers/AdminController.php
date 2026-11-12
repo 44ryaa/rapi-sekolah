@@ -7,7 +7,9 @@ use App\Models\Room;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -243,22 +245,28 @@ class AdminController extends Controller
     public function roomDelete(int $id)
     {
         $room = Room::findOrFail($id);
-
-        // Cek apakah ada peminjaman atau pengaduan terkait ruangan ini
-        $hasEvents = $room->events()->exists();
-        $hasComplaints = $room->complaints()->exists();
-
-        if ($hasEvents || $hasComplaints) {
-            // Jika ada data historis, nonaktifkan ruangan agar data lama tidak rusak
-            $room->update(['is_active' => false]);
-
-            return back()->with('success', "Ruangan '{$room->room_name}' memiliki riwayat kegiatan/pengaduan, sehingga statusnya dinonaktifkan (arsip).");
-        }
-
         $roomName = $room->room_name;
-        $room->delete();
 
-        return back()->with('success', "Ruangan '{$roomName}' berhasil dihapus secara permanen.");
+        DB::transaction(function () use ($room) {
+            // Hapus semua foto fisik dari pengaduan ruangan ini di storage
+            foreach ($room->complaints as $c) {
+                if ($c->photo_path && Storage::disk('public')->exists($c->photo_path)) {
+                    Storage::disk('public')->delete($c->photo_path);
+                }
+                if ($c->completion_photo_path && Storage::disk('public')->exists($c->completion_photo_path)) {
+                    Storage::disk('public')->delete($c->completion_photo_path);
+                }
+            }
+
+            // Bersihkan secara tuntas seluruh acara/peminjaman (baik sebelum maupun sesudah) dan pengaduan
+            $room->events()->delete();
+            $room->complaints()->delete();
+
+            // Hapus ruangan permanen
+            $room->delete();
+        });
+
+        return back()->with('success', "Ruangan '{$roomName}' beserta seluruh riwayat kegiatan dan pengaduannya berhasil dihapus bersih (clear).");
     }
 
     private function normalizePhone(string $p): string
